@@ -1,3 +1,5 @@
+@props(['flexCenter' => false])
+
 <!doctype html>
 <html lang="pl">
 <head>
@@ -25,8 +27,10 @@
     @vite(['resources/js/app.js', 'resources/css/app.css'])
     <title>MatchMate</title>
 </head>
-<body>
+<body class="{{(request()->is("/") ? "h-[100vh] overflow-hidden" : "")}} {{ $flexCenter ? "flex items-center justify-center min-h-[100vh]" : "" }}">
     <x-nav-bar/>
-    {{ $slot }}
+    <main>
+        {{ $slot }}
+    </main>
 </body>
 </html>

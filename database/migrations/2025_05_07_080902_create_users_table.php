@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Role;
+use App\Models\Team;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,10 +15,25 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->foreignIdFor(Team::class)
+                ->nullable()
+                ->constrained()
+                    ->cascadeOnUpdate()
+                    ->nullOnDelete();
+            $table->boolean('is_reserve')->default(false);
             $table->string('name');
+            $table->string('surname');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('php_path')->nullable();
+            $table->foreignIdFor(Role::class)
+                ->default(0)
+                /**
+                 * Deletion observer present (sets to guest level permissions). @see \App\Providers\AppServiceProvider
+                 */
+                ->constrained()
+                    ->cascadeOnUpdate();
             $table->rememberToken();
             $table->timestamps();
         });
