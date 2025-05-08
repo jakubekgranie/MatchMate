@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use http\Exception\InvalidArgumentException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class SessionController extends Controller
 {
@@ -10,10 +13,19 @@ class SessionController extends Controller
      * Login page returned
      */
     public function index(){
-        return redirect('/');
+        return view('session.login');
     }
-    public function store(){
-
+    public function store(Request $request){
+        $request->validate([
+            'email' => ['required', 'email', 'max:254'],
+            'password' => ['required', 'min:8'],
+        ]);
+        if(!Auth::attempt(request(['email', 'password'])))
+            throw ValidationException::withMessages([
+                'email' => 'Nieprawidłowy adres e-mail lub hasło.',
+            ]);
+        request()->session()->regenerate();
+        return redirect('/');
     }
     public function show(){
 
@@ -25,6 +37,8 @@ class SessionController extends Controller
 
     }
     public function destroy(){
-
+        Auth::logout();
+        session_destroy();
+        return redirect('/');
     }
 }

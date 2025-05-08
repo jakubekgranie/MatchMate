@@ -5,11 +5,8 @@
             <div class="border-b border-gray-900/10 pb-12">
                 <h1 class="text-4xl font-bold text-gray-900 text-center mb-7.5">Zarejestruj się</h1>
                 <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-8">
-                    <x-form-input name="name" placeholder="Jan">Imię</x-form-input>
-                    <x-form-input name="surname" placeholder="Kowalski">Nazwisko</x-form-input>
                     <x-form-input name="email" type="email" autocomplete="email" placeholder="jan.kowalski@poczta.pl">Adres email</x-form-input>
                     <x-form-input name="password" type="password">Hasło</x-form-input>
-                    <x-form-input name="password_confirmation" type="password">Powtórz hasło</x-form-input>
                 </div>
             </div>
         </div>

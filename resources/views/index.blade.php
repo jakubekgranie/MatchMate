@@ -13,7 +13,7 @@
                             <a href="/register" class="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Zaczynajmy!</a>
                         @endguest
                         @auth
-                            <a href="#" class="rounded-md bg-radial from-indigo-600 to-indigo-700 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Mój profil</a>
+                            <a href="#" class="rounded-md bg-radial from-indigo-600/90 to-indigo-700 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 duration-100">Mój profil</a>
                         @endauth
                         <a href="#" class="text-sm/6 font-semibold text-gray-900">Learn more <span aria-hidden="true">→</span></a>
                     </div>

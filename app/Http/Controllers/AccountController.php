@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rules\Password;
 
 class AccountController extends Controller
 {
@@ -19,7 +22,21 @@ class AccountController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Auth::login(User::create(
+            $request->validate([
+                'name' => ['required', 'alpha', 'max:63'],
+                'surname' => ['required', 'alpha', 'max:127'],
+                'email' => ['required', 'email', 'max:254'],
+                'password' => ['required', 'confirmed', Password::min(8)
+                    ->mixedCase()
+                    ->letters()
+                    ->numbers()
+                    ->symbols()
+                    ->uncompromised()
+                ]
+            ])
+        ));
+        return redirect('/');
     }
 
     /**

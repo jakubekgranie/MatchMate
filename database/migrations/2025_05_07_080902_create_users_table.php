@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('php_path')->nullable();
             $table->foreignIdFor(Role::class)
-                ->default(0)
+                ->default(1)
                 /**
                  * Deletion observer present (sets to guest level permissions). @see \App\Providers\AppServiceProvider
                  */
