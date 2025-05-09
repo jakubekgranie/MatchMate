@@ -19,6 +19,7 @@ class TeamFactory extends Factory
         return [
             'name' => $this->faker->unique()->company(),
             'motto' => $this->faker->words(rand(3, 7), true),
+            'team_color' => $this->faker->hexColor(),
             'description' => $this->faker->text()
         ];
     }

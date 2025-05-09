@@ -1,5 +1,5 @@
 <header class="inset-x-0 top-0 z-50 fixed">
-    <nav class="flex items-center justify-between p-6 lg:px-8 {{ !request()->is("/") ? "backdrop-blur-sm shadow-sm" : "" }}" aria-label="Global">
+    <nav class="flex items-center justify-between p-6 lg:px-8 {{ !request()->is("/") ? "backdrop-blur-sm shadow-sm bg-white/40" : "hover:backdrop-blur-sm hover:shadow-sm hover:bg-white/40 duration-100" }}" aria-label="Global">
         <div class="flex lg:flex-1">
             <a href="/" class="-m-1.5 p-1.5">
                 <span class="sr-only">Your Company</span>
@@ -24,8 +24,12 @@
                 <x-section-anchor href="/login" class="px-2.5 py-2 border-2 border-black/35 rounded-xl bg-green-400/40 text-shadow-2xs/12.5 hover:bg-green-400/60 duration-100">Zaloguj się&nbsp;<span aria-hidden="true">&rarr;</span></x-section-anchor>
             @endguest
             @auth
-                <x-section-anchor href="https://www.google.com" class="px-2.5 py-2 border-2 border-black/20 rounded-xl">Wyloguj się</x-section-anchor>
-                <x-section-anchor href="https://www.google.com" class="px-2.5 py-2 border-2 border-black/20 rounded-xl bg-purple-700/35 text-shadow-2xs/12.5">Profil&nbsp;<span aria-hidden="true">&rarr;</span></x-section-anchor>
+                <form action="/logout" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <x-section-anchor :formMode="true" href="/logout" class="hover:backdrop-blur-md bg-white/16 hover:bg-stone-100/60 py-2 px-2.5 border-2 hover:border-black/40 border-gray-700/20 rounded-xl transition duration-100">Wyloguj się</x-section-anchor>
+                </form>
+                <x-section-anchor href="/profile" class="px-2.5 py-2 border-2 border-black/20 rounded-xl bg-purple-700/47.5 hover:bg-purple-700/33 duration-100 text-shadow-2xs/12.5">Profil&nbsp;<span aria-hidden="true">&rarr;</span></x-section-anchor>
             @endauth
         </div>
     </nav>

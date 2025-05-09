@@ -8,6 +8,7 @@ use App\Models\Team;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -44,5 +45,12 @@ class DatabaseSeeder extends Seeder
                 'is_reserve' => sizeof($teams[$team_id]->users) > 4,
             ]);
         }
+
+        User::create([
+            "name" => "Natan",
+            "surname" => "Agent",
+            "email" => "agencik@gmail.com",
+            "password" => Hash::make("testowy"),
+        ]);
     }
 }

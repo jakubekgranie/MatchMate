@@ -8,10 +8,12 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', MainPageController::class);
 
 Route::controller(SessionController::class)->middleware('guest')->group(function () {
-    Route::get('/login', 'index');
+    Route::get('/login', 'create');
+    Route::post('/login', 'store');
 });
 Route::controller(SessionController::class)->middleware('auth')->group(function () {
-
+    Route::get('/profile', 'show');
+    Route::delete('/logout', 'destroy');
 });
 
 Route::controller(AccountController::class)->middleware('guest')->group(function () {

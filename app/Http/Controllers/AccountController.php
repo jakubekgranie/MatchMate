@@ -35,7 +35,7 @@ class AccountController extends Controller
                     ->uncompromised()
                 ]
             ])
-        ));
+        ), $request->has('remember'));
         return redirect('/');
     }
 
