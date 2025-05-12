@@ -25,7 +25,12 @@ class User extends Authenticatable
         'name',
         'surname',
         'email',
+        'weight',
+        'height',
+        'age',
         'password',
+        'pfp_path',
+        'banner_path',
     ];
 
     /**

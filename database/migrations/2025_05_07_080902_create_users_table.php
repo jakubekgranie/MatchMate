@@ -28,6 +28,9 @@ return new class extends Migration
             $table->string('password');
             $table->string('pfp_name')->nullable();
             $table->string('banner_name')->nullable();
+            $table->unsignedInteger('weight')->nullable();
+            $table->unsignedInteger('height')->nullable();
+            $table->unsignedInteger('age')->nullable();
             $table->foreignIdFor(Role::class)
                 ->default(1)
                 /**

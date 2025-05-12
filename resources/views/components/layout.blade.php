@@ -1,4 +1,4 @@
-@props(['flexCenter' => false, 'pageTitle' => false])
+@props(['flexCenter' => false, 'pageTitle' => false, 'scripts' => ''])
 
 <!doctype html>
 <html lang="pl">
@@ -17,7 +17,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Playwrite+DK+Loopet:wght@100..400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Outfit:wght@100..900&family=Playwrite+DK+Loopet:wght@100..400&display=swap" rel="stylesheet">
     <!--
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self' http://[::1]:5173;
@@ -29,9 +29,10 @@
     <link rel="icon" type="image/png" href="">
     -->
     @vite(['resources/js/app.js', 'resources/css/app.css'])
+    {{ $scripts }}
     <title>{{ "MatchMate".($pageTitle ? " - ".$pageTitle : "") }}</title>
 </head>
-<body class="{{(request()->is("/") ? "bg-white h-[100vh] overflow-hidden" : "bg-stone-50")}} {{ $flexCenter ? "flex items-center justify-center min-h-[100vh]" : "" }}">
+<body class="{{(request()->is("/") ? "bg-white h-[100vh] overflow-hidden" : "bg-stone-200")}} {{ $flexCenter ? "flex items-center justify-center min-h-[100vh]" : "" }}">
     <x-nav-bar/>
     <main>
         {{ $slot }}

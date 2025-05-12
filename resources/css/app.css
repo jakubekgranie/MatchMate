@@ -16,6 +16,12 @@
 @utility font-cal-sans {
     font-family: 'Cal Sans', --font-sans, monospace;
 }
+@utility font-outfit{
+    font-family: 'Outfit', --font-sans, monospace;
+}
+@utility font-system{
+    font-family: 'system-ui', --font-sans, monospace;
+}
 @utility text-lgr{
     font-size: var(--text-lg) /* 1.125rem = 18px */;
     line-height: var(--tw-leading, var(--text-lg--line-height) /* calc(1.75 / 1.125) ≈ 1.5556 */);
