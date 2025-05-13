@@ -1,4 +1,5 @@
 <x-layout page-title="Profil" :flex-center="true">
+    <div class="outline-lime-400 hidden"></div> <!-- A class present only in js -->
     <x-slot:scripts>
         <script type="module" src="{{Vite::asset("resources/js/profile.js")}}"></script>
         <script type="module" src="{{Vite::asset("resources/js/clickableCard.js")}}"></script>
@@ -9,25 +10,50 @@
             <x-profile-card :user="\App\Models\User::with('teams')->find(Auth::id())" :preview-mode="true"/>
         </div>
         <div class="h-70 w-0.5 bg-stone-400 mx-8"></div>
-        <div class="m-auto w-fit border border-gray-500/45 rounded-2xl px-4 pt-4.5 pb-7 bg-gray-100/60 shadow-sm shadow-gray-400">
-            <h2 class="text-left mb-4.5 text-lg font-semibold">Dane podstawowe</h2>
-            <form class="grid grid-cols-2 gap-3.5" id="profileForm" method="POST" >
-                @csrf
-                @method('PATCH')
-                <x-form-input name="name" :label="false" placeholder="Imię" grid-override=" " />
-                <x-form-input name="surname" :label="false" placeholder="Nazwisko" grid-override=" " />
-                <x-form-input name="age" type="number" maxlength="2" :label="false" placeholder="Wiek" grid-override=" " />
-                <x-form-input name="height" type="number" maxlength="3" :label="false" placeholder="Wzrost (cm)" grid-override=" " />
-                <x-form-input name="weight" type="number" maxlength="3" :label="false" placeholder="Waga (kg)" grid-override=" " />
-                <button type="submit" disabled id="submission" class="rounded-md text-sm font-semibold shadow-xs bg-gray-800 text-gray-300 hover:bg-gray-700 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 duration-100 font-system flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" id="svgIcon" class="w-4 h-4 mr-2 duration-100" viewBox="0 0 495 495" style="fill: oklch(70.7% 0.022 261.325); shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd">
-                        <g><path style="opacity:0.997" d="M 53.5,15.5 C 88.8333,15.5 124.167,15.5 159.5,15.5C 159.333,58.168 159.5,100.835 160,143.5C 160.93,159.546 169.097,169.713 184.5,174C 208.136,175.13 231.803,175.63 255.5,175.5C 279.197,175.63 302.864,175.13 326.5,174C 341.903,169.713 350.07,159.546 351,143.5C 351.5,100.835 351.667,58.168 351.5,15.5C 364.171,15.3334 376.838,15.5001 389.5,16C 390.833,16.6667 392.167,17.3333 393.5,18C 426.667,51.1667 459.833,84.3333 493,117.5C 493.667,118.833 494.333,120.167 495,121.5C 495.667,233.5 495.667,345.5 495,457.5C 489.833,477.333 477.333,489.833 457.5,495C 443.504,495.5 429.504,495.667 415.5,495.5C 415.667,447.499 415.5,399.499 415,351.5C 413.214,327.379 400.714,311.879 377.5,305C 336.854,303.863 296.187,303.363 255.5,303.5C 215.144,303.36 174.811,303.86 134.5,305C 110.729,311.438 97.8956,326.938 96,351.5C 95.5,399.499 95.3333,447.499 95.5,495.5C 81.496,495.667 67.496,495.5 53.5,495C 33.6667,489.833 21.1667,477.333 16,457.5C 15.3333,322.833 15.3333,188.167 16,53.5C 21.3488,33.6518 33.8488,20.9852 53.5,15.5 Z"/></g>
-                        <g><path style="opacity:1" d="M 191.5,15.5 C 234.167,15.5 276.833,15.5 319.5,15.5C 319.5,58.1667 319.5,100.833 319.5,143.5C 276.833,143.5 234.167,143.5 191.5,143.5C 191.5,100.833 191.5,58.1667 191.5,15.5 Z"/></g>
-                        <g><path style="opacity:0.999" d="M 137.5,335.5 C 216.167,335.333 294.834,335.5 373.5,336C 378,337.833 381.167,341 383,345.5C 383.5,395.499 383.667,445.499 383.5,495.5C 298.167,495.5 212.833,495.5 127.5,495.5C 127.333,445.499 127.5,395.499 128,345.5C 130.022,340.98 133.189,337.647 137.5,335.5 Z"/></g>
-                    </svg>
-                    Zatwierdź
-                </button>
-            </form>
+        <div class="grid gap-7">
+            <x-update-form-container title="Dane podstawowe">
+                <form class="grid grid-cols-2 gap-3.5" id="profileForm" method="POST">
+                    @csrf
+                    @method('PATCH')
+                    <x-form-input name="name" maxlength="13" :label="false" placeholder="Imię" grid-override=" " />
+                    <x-form-input name="surname" :label="false" placeholder="Nazwisko" grid-override=" " />
+                    <x-form-input name="age" type="number" maxlength="3" min="18" max="120" :label="false" placeholder="Wiek" grid-override=" " />
+                    <x-form-input name="height" type="number" maxlength="3" min="55" max="272" :label="false" placeholder="Wzrost (cm)" grid-override=" " />
+                    <x-form-input name="weight" type="number" maxlength="3" min="20" max="300" :label="false" placeholder="Waga (kg)" grid-override=" " />
+                    <x-save-button svg-icon-id="svgIconText"/>
+                </form>
+            </x-update-form-container>
+            <x-update-form-container title="Obrazy" enctype="multipart/form-data">
+                <form id="imageForm" method="POST">
+                    @csrf
+                    @method('PATCH')
+                    <div class="grid grid-cols-2 gap-3.5">
+                        <input type="file" accept="image/png, image/webp, image/jpeg" id="pfp" hidden/>
+                        <div id="dnd_pfp" class=" bg-gray-800 hover:bg-gray-700 cursor-pointer rounded-md duration-100 outline-2 outline-gray-500 outline-dashed -outline-offset-8 hover:outline-gray-300 focus-visible:outline-solid">
+                            <div class="aspect-square flex justify-center items-center">
+                                <svg id="svgPfp" style="fill: oklch(70.7% 0.022 261.325);" viewBox="0 0 512 512" class="svg w-6 h-6 pointer-events-none duration-100">
+                                    <g><path style="opacity:0.989" d="M 233.5,-0.5 C 248.167,-0.5 262.833,-0.5 277.5,-0.5C 377.807,11.9842 449.307,63.9842 492,155.5C 502.297,180.687 508.797,206.687 511.5,233.5C 511.5,248.167 511.5,262.833 511.5,277.5C 499.018,377.805 447.018,449.305 355.5,492C 330.316,502.296 304.316,508.796 277.5,511.5C 262.833,511.5 248.167,511.5 233.5,511.5C 133.193,499.016 61.693,447.016 19,355.5C 8.70332,330.313 2.20332,304.313 -0.5,277.5C -0.5,262.833 -0.5,248.167 -0.5,233.5C 11.9821,133.195 63.9821,61.6947 155.5,19C 180.684,8.70393 206.684,2.20393 233.5,-0.5 Z M 247.5,76.5 C 291.252,75.7896 320.752,95.7896 336,136.5C 345.891,183.548 329.391,217.715 286.5,239C 243.142,252.438 208.642,240.604 183,203.5C 163.095,163.093 169.262,127.26 201.5,96C 215.164,85.3285 230.497,78.8285 247.5,76.5 Z M 195.5,287.5 C 235.501,287.333 275.501,287.5 315.5,288C 353.683,294.848 377.849,317.015 388,354.5C 393.909,377.123 387.076,394.623 367.5,407C 312.402,445.304 253.068,453.638 189.5,432C 165.507,423.105 144.674,409.605 127,391.5C 120.406,379.412 119.073,366.745 123,353.5C 133.764,316.561 157.931,294.561 195.5,287.5 Z"/></g>
+                                </svg>
+                            </div>
+                        </div>
+                        <input type="file" accept="image/png, image/webp, image/jpeg" id="banner" hidden/>
+                        <div id="dnd_banner" class="bg-gray-800 hover:bg-gray-700 cursor-pointer rounded-md duration-100 outline-2 outline-gray-500 outline-dashed -outline-offset-8 hover:outline-gray-300 focus-visible:outline-solid">
+                            <div class="aspect-square flex justify-center items-center">
+                                <svg id="svgBanner" style="fill: oklch(70.7% 0.022 261.325);" viewBox="0 0 512 512" class="svg w-6.5 h-6.5 pointer-events-none duration-100">
+                                    <g><path style="opacity:0.986" d="M 511.5,80.5 C 511.5,197.167 511.5,313.833 511.5,430.5C 506.36,445.132 496.026,453.298 480.5,455C 330.5,455.667 180.5,455.667 30.5,455C 14.9738,453.298 4.6405,445.132 -0.5,430.5C -0.5,313.833 -0.5,197.167 -0.5,80.5C 4.50997,66.3315 14.51,58.1649 29.5,56C 180.167,55.3333 330.833,55.3333 481.5,56C 496.49,58.1649 506.49,66.3315 511.5,80.5 Z M 32.5,89.5 C 181.167,89.5 329.833,89.5 478.5,89.5C 478.667,167.501 478.5,245.501 478,323.5C 456.5,304 435,284.5 413.5,265C 403.5,259 393.5,259 383.5,265C 361.32,287.347 338.986,309.514 316.5,331.5C 272.688,279.187 228.688,227.02 184.5,175C 169.701,167.494 157.201,170.327 147,183.5C 109.237,228.02 71.2368,272.353 33,316.5C 32.5,240.834 32.3333,165.167 32.5,89.5 Z"/></g>
+                                    <g><path style="opacity:0.974" d="M 375.5,129.5 C 401.814,126.365 419.648,137.032 429,161.5C 434.166,187.67 424.666,206.17 400.5,217C 372.003,223.837 352.503,213.67 342,186.5C 337.275,157.926 348.442,138.926 375.5,129.5 Z"/></g>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3.5 mt-3.5 h-9">
+                        <x-save-button id="imageSubmission" svg-icon-id="svgIconImages"/>
+                        <x-save-button id="imageReset" svg-icon-id="svgIconImages" class="bg-red-700 hover:bg-red-600 text-gray-100" text="Przywróć">
+
+                        </x-save-button>
+                    </div>
+                </form>
+            </x-update-form-container>
         </div>
     </div>
 </x-layout>

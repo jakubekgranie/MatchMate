@@ -21,5 +21,5 @@ Route::controller(AccountController::class)->middleware('guest')->group(function
     Route::post('/register', 'store');
 });
 Route::controller(AccountController::class)->middleware('auth')->group(function () {
-
+    Route::patch('/profile/text', 'update');
 });

@@ -60,7 +60,13 @@ class AccountController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        switch($request->getRequestUri()) {
+            case "/profile/text":
+                break;
+            case "/profile/images":
+                break;
+        }
+        return redirect("/profile");
     }
 
     /**
