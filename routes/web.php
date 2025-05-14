@@ -22,4 +22,5 @@ Route::controller(AccountController::class)->middleware('guest')->group(function
 });
 Route::controller(AccountController::class)->middleware('auth')->group(function () {
     Route::patch('/profile/text', 'update');
+    Route::patch('/profile/images', 'update');
 });

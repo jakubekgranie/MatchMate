@@ -4,55 +4,60 @@
  */
 
 const bindings = ["weight", "age", "height", "name", "surname"],
-      svgStyles = ["oklch(70.7% 0.022 261.325)", "oklch(84.1% 0.238 128.85)"], // gray, lime
-      commitLockedStyles = ["bg-gray-800", "text-gray-300", "hover:bg-gray-700", "focus-visible:outline-gray-700"], // global due to multiple usages
-      commitUnlockedStyles = ["bg-lime-950", "text-lime-400", "hover:bg-lime-900", "focus-visible:outline-lime-400"];
+      svgStyles = ["oklch(70.7% 0.022 261.325)", "oklch(84.1% 0.238 128.85)"]; // gray, lime
+
 let elements,
     validationErrorStates = [false, false, false, false, false],
-    archive = [];
+    archive = [],
+    rawPaths;
 
 function classToggler(element, classArray, classArray2){
     element.classList.add(...classArray);
     element.classList.remove(...classArray2);
 }
+function changeButtonLock(button, svgIcon, lock = true){
+    const commitLockedStyles = ["bg-gray-800", "text-gray-300", "hover:bg-gray-700", "focus-visible:outline-gray-700"],
+         commitUnlockedStyles = ["bg-lime-950", "text-lime-400", "hover:bg-lime-900", "focus-visible:outline-lime-400"];
+    if(lock && !button.disabled){
+        button.disabled = true;
+        classToggler(button, commitLockedStyles, commitUnlockedStyles);
+        svgIcon.style.fill = svgStyles[0];
+    }
+    if(!lock && button.disabled){
+        button.disabled = false;
+        classToggler(button, commitUnlockedStyles, commitLockedStyles);
+        svgIcon.style.fill = svgStyles[1];
+    }
+}
+
 /**
  * **`buttonLocker()`**
  *
  * This function **disables the submission button** and **adjusts its styling** based on whether the changes provided by the user are valid.
- * Partially relies on `livePreview()`.
  *
- * **Note:** this function **does not** serve as a data validator; see the php components for further insights.
+ * Partially relies on `livePreview()` and executes the changes via `changeButtonLock()`.
  *
- * @return {void}.
+ * **Note:** this function **does not** serve as a *de facto* data validator; see the php components for further insights.
+ *
+ * @return {void}
  * @see `livePreview()`
+ * @see `changeButtonLock()`
  * @see respective php components
  */
 function buttonLocker(){
     const button = document.getElementById("submission"),
           svgIcon = document.getElementById("svgIconText");
     if(validationErrorStates.includes(true)) {
-        button.disabled = true;
-        classToggler(button, commitLockedStyles, commitUnlockedStyles);
-        svgIcon.style.fill = svgStyles[0];
+        changeButtonLock(button, svgIcon, true);
         return;
     }
-    let oneOrMoreChanged = false;
-    for(let i = 0; i < elements.length; i++) {
+    for(let i = 0; i < elements.length; i++)
         for(let j = 0; j < bindings.length; j++)
-            if (elements[i].id === bindings[j] && elements[i].value !== archive[j] && elements[i].value !== "")
-                oneOrMoreChanged = true;
-    }
-
-    if(oneOrMoreChanged) {
-        button.disabled = false;
-        classToggler(button, commitUnlockedStyles, commitLockedStyles);
-        svgIcon.style.fill = svgStyles[1];
-    }
-    else{
-        button.disabled = true;
-        classToggler(button, commitLockedStyles, commitUnlockedStyles);
-        svgIcon.style.fill = svgStyles[0];
-    }
+            if (elements[i].id === bindings[j] && elements[i].value !== archive[j] && elements[i].value !== "") {
+                changeButtonLock(button, svgIcon, false);
+                return;
+            }
+    changeButtonLock(button, svgIcon, true);
 }
 /**
  * **`addSuffix()`**
@@ -79,11 +84,6 @@ function addSuffix(targetId, age){
             return "cm";
     }
     return "";
-}
-function raiseError(targetId, errorMessage){
-    const errorContainer = document.getElementById(`${targetId}_error`);
-    errorContainer.innerHTML = errorMessage;
-    errorContainer.classList.remove("hidden");
 }
 /**
  * **`livePreview()`**
@@ -124,6 +124,26 @@ function livePreview() {
                         }
                         // Detect and note anomalies.
                         switch (target.id) {
+                            case "name":
+                                if(valueOf.length < 2)
+                                    errorMessage = "To imię jest zbyt krótkie."
+                                else if(valueOf.length > 14)
+                                    errorMessage = "To imię jest zbyt długie."
+                                else if(!valueOf.match(/^[A-Za-z]+$/))
+                                    errorMessage = "Wykryto niedozwolone znaki.";
+                                else if(!valueOf.match(/^[A-Z][a-z]+$/))
+                                    errorMessage = "Niepoprawna wysokość liter.";
+                                break;
+                            case "surname":
+                                if(valueOf.length < 2)
+                                    errorMessage = "To nazwisko jest zbyt krótkie."
+                                else if(valueOf.length > 35)
+                                    errorMessage = "To nzawisko jest zbyt długie."
+                                else if(!valueOf.match(/^[A-Za-z]+$/))
+                                    errorMessage = "Wykryto niedozwolone znaki.";
+                                else if(!valueOf.match(/^[A-Z][a-z]+$/))
+                                    errorMessage = "Niepoprawna wysokość liter.";
+                                break;
                             case "weight":
                                 if (valueOf > 300 || valueOf < 20)
                                     errorMessage = "Skontaktuj się z Obsługą Klienta.";
@@ -144,7 +164,9 @@ function livePreview() {
                         // Notify the user of discrepancies.
                         if(errorMessage) {
                             validationErrorStates[j] = true;
-                            raiseError(target.id, errorMessage);
+                            const errorContainer = document.getElementById(`${target.id}_error`);
+                            errorContainer.innerHTML = errorMessage;
+                            errorContainer.classList.remove("hidden");
                         }
                         // Remove the error lock and preview the value.
                         else {
@@ -158,35 +180,113 @@ function livePreview() {
         });
 }
 
+const defaultDNDStyling = ["bg-gray-800", "outline-gray-500", "hover:outline-gray-300", "hover:bg-gray-700"],
+    activatedStyling = [["bg-lime-900", "outline-lime-400"], ["bg-lime-950", "outline-lime-400", "hover:bg-lime-900"]];
+
+/**
+ * **`imageButtonLocker()`**
+ *
+ * This function serves **as a `dragAndDropSetup()`'s helper (for applying styles)**. Uses `changeButtonLock()` for verdict execution.
+ *
+ * @param {number} i - Required. Used for determinimg what to compare.
+ * @return {void}
+ * @see `dragAndDropSetup()`
+ * @see `changeButtonLock()`
+ */
+function imageButtonLocker(i){
+    const button = document.getElementById("imageSubmission"),
+          svgIcon = document.getElementById("svgIconImages"),
+          ids = ["pfp", "banner"];
+    let lock = true;
+    if(document.getElementById(ids[i]).value.replace(/^.*[\\/]/, '') !== "")
+        lock = false;
+    changeButtonLock(button, svgIcon, lock);
+}
+
+/**
+ * **`previewImage()`**
+ *
+ * This function **handles direct image substitution**.
+ *
+ * @param {blob} file - Required. Contains the to-be-inserted file data.
+ * @param {number} i - Required. Determines the target host element.
+ */
+function previewImage(file, i){
+    if(file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+            switch (i) {
+                case 0:
+                    document.getElementById("user_pfp").src = reader.result;
+                    break;
+                case 1:
+                    document.getElementById("user_banner").style.backgroundImage = `url("${reader.result}")`;
+                    break;
+            }
+        }
+        reader.readAsDataURL(file);
+    }
+}
+/**
+ * **`dragAndDropSetup()`**
+ *
+ * This function accepts *no parameters*.
+ *
+ * This function **enables drag and drop functionality** and reactive styling**.
+ *
+ * @return {void}
+ */
 function dragAndDropSetup(){
     const inputIds = ["pfp", "banner"];
+    let collectionIndex = [0, 0];
     inputIds.forEach((inputId, i) => {
         const element = document.getElementById(`dnd_${inputId}`),
-              hoverClasses = [["bg-gray-700", "outline-gray-300"], ["bg-lime-900", "outline-lime-400"]],
-              nonHoverClasses = [["bg-gray-800", "outline-gray-500", "hover:outline-gray-300", "hover:bg-gray-700"], ["bg-lime-950", "outline-lime-400", "hover:bg-lime-900"]];
-        let collectionIndex = [0, 0];
-
-        element.addEventListener("dragenter", () => {
-            console.log("dragenter");
-            classToggler(element, hoverClasses[collectionIndex[i]], nonHoverClasses[collectionIndex[i]]);
-        });
-        element.addEventListener("dragleave", () => {
-            classToggler(element, nonHoverClasses[collectionIndex[i]], hoverClasses[collectionIndex[i]]);
-        });
+              hoverClasses = [["bg-gray-700", "outline-gray-300"], activatedStyling[0]],
+              nonHoverClasses = [defaultDNDStyling, activatedStyling[1]];
+        element.addEventListener("dragenter", () => classToggler(element, hoverClasses[collectionIndex[i]], nonHoverClasses[collectionIndex[i]]));
+        element.addEventListener("dragleave", () => classToggler(element, nonHoverClasses[collectionIndex[i]], hoverClasses[collectionIndex[i]]));
         element.addEventListener("dragover", (e) => e.preventDefault());
         element.addEventListener("drop", (e) => {
             e.preventDefault();
             classToggler(element, nonHoverClasses[collectionIndex[i]], hoverClasses[collectionIndex[i]]);
+            const file = e.dataTransfer.files[0],
+                  allowedExtensions = ["png", "webp", "pjp", "jpg", "pjpeg", "jpeg", "jfif"];
+            let allowed = false;
+            allowedExtensions.forEach(extension => {
+                if (file.name.search(new RegExp(`.${extension}`)))
+                    allowed = true;
+            });
+            if(allowed)
+                previewImage(file, i);
+            imageButtonLocker(i);
         });
         document.getElementById(inputId).addEventListener("change", () => {
             if(collectionIndex[i] === 0) {
                 classToggler(element, nonHoverClasses[1], hoverClasses[0].concat(nonHoverClasses[0]));
                 document.getElementById(`svg${inputIds[i].charAt(0).toUpperCase() + inputIds[i].slice(1)}`).style.fill = svgStyles[1];
                 collectionIndex[i] = 1;
+                imageButtonLocker(i);
             }
         });
-        element.addEventListener("click", () => document.getElementById(inputId).click());
-    })
+
+        const trueInput = document.getElementById(inputId)
+        element.addEventListener("click", () => trueInput.click());
+        trueInput.addEventListener("change", (e) => {
+            imageButtonLocker(i);
+            previewImage(e.target.files[0], i);
+        });
+    });
+    document.getElementById("imageReset").addEventListener("click", () => {
+        document.getElementById("imageForm").reset();
+        for(let i = 0; i < inputIds.length; i++) {
+            classToggler(document.getElementById(`dnd_${inputIds[i]}`), defaultDNDStyling, activatedStyling[0].concat(activatedStyling[1]));
+            document.getElementById(`svg${inputIds[i].charAt(0).toUpperCase() + inputIds[i].slice(1)}`).style.fill = svgStyles[0];
+            document.getElementById("user_pfp").src = rawPaths[0];
+            document.getElementById("user_banner").style.backgroundImage = rawPaths[1];
+            collectionIndex = [0, 0];
+        }
+        imageButtonLocker(i);
+    });
 }
 
 /**
@@ -202,7 +302,9 @@ function initiate(){
     elements = document.querySelectorAll("#profileForm input:not([type=hidden])");
     for (let i = 0; i < bindings.length; i++)
         archive.push(document.getElementById(`user_${bindings[i]}`).innerHTML);
+    archive.push(document.getElementById("user_banner").style.backgroundImage, document.getElementById("user_pfp").src);
     livePreview();
+    rawPaths = [document.getElementById("user_pfp").src, document.getElementById("user_banner").style.backgroundImage];
     dragAndDropSetup();
 }
 document.addEventListener("DOMContentLoaded", initiate);

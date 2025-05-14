@@ -51,7 +51,6 @@ class DatabaseSeeder extends Seeder
             "surname" => "Agent",
             "email" => "agencik@gmail.com",
             "password" => Hash::make("testowy"),
-            "pfp_name" => "messi.png",
             "height" => 192,
             "weight" => 76,
             "age" => 28
