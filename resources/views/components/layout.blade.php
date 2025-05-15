@@ -30,12 +30,19 @@
     -->
     @vite(['resources/js/app.js', 'resources/css/app.css'])
     {{ $scripts }}
+    <script type="module" src="{{ Vite::asset("resources/js/disableFakeNavBars.js") }}"></script>
     <title>{{ "MatchMate".($pageTitle ? " - ".$pageTitle : "") }}</title>
 </head>
-<body class="{{(request()->is("/") ? "bg-white h-[100vh] overflow-hidden" : "bg-stone-200")}} {{ $flexCenter ? "flex items-center justify-center min-h-[100vh]" : "" }}">
+<body class="{{ request()->is("/") ? "bg-white h-[100vh] overflow-hidden" : "bg-stone-200" }} {{ $flexCenter ? "min-h-[100vh]" : "" }}">
     <x-nav-bar/>
+    @if($flexCenter)
+        <div class="flex flex-col items-center justify-center min-h-[calc(100vh-5.75rem)]">
+    @endif
     <main>
         {{ $slot }}
     </main>
+    @if($flexCenter)
+        </div>
+    @endif
 </body>
 </html>

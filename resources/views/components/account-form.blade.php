@@ -1,5 +1,5 @@
 @props(['heading' => "Formularz"])
-<form {{ $attributes->merge(['class' => "m-auto w-fit border border-gray-500/45 rounded-2xl px-7 py-11 bg-gray-100/60 mt-10"]) }}>
+<form {{ $attributes->merge(['class' => "m-auto w-fit border border-gray-500/45 rounded-2xl px-7 py-11 bg-gray-100/60 my-13"]) }}>
     @csrf
     <div class="space-y-12">
         <div class="border-b border-gray-900/10 pb-12">

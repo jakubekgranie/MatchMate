@@ -23,4 +23,7 @@ Route::controller(AccountController::class)->middleware('guest')->group(function
 Route::controller(AccountController::class)->middleware('auth')->group(function () {
     Route::patch('/profile/text', 'update');
     Route::patch('/profile/images', 'update');
+    Route::patch('/profile/email', 'updateMail');
+    Route::patch('/profile/password', 'updatePassword');
+    Route::delete('/profile/delete', 'destroy');
 });

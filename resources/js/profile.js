@@ -189,16 +189,17 @@ const defaultDNDStyling = ["bg-gray-800", "outline-gray-500", "hover:outline-gra
  * This function serves **as a `dragAndDropSetup()`'s helper (for applying styles)**. Uses `changeButtonLock()` for verdict execution.
  *
  * @param {number} i - Required. Used for determinimg what to compare.
+ * @param {boolean} forceLock - Optional. Locks the button regardless for the `i`.
  * @return {void}
  * @see `dragAndDropSetup()`
  * @see `changeButtonLock()`
  */
-function imageButtonLocker(i){
+function imageButtonLocker(i, forceLock = false){
     const button = document.getElementById("imageSubmission"),
           svgIcon = document.getElementById("svgIconImages"),
           ids = ["pfp", "banner"];
     let lock = true;
-    if(document.getElementById(ids[i]).value.replace(/^.*[\\/]/, '') !== "")
+    if(document.getElementById(ids[i]).value.replace(/^.*[\\/]/, '') !== "" && !forceLock)
         lock = false;
     changeButtonLock(button, svgIcon, lock);
 }
@@ -208,8 +209,9 @@ function imageButtonLocker(i){
  *
  * This function **handles direct image substitution**.
  *
- * @param {blob} file - Required. Contains the to-be-inserted file data.
+ * @param {Blob} file - Required. Contains the to-be-inserted file data.
  * @param {number} i - Required. Determines the target host element.
+ * @see `dragAndDropSetup()`
  */
 function previewImage(file, i){
     if(file) {
@@ -232,17 +234,21 @@ function previewImage(file, i){
  *
  * This function accepts *no parameters*.
  *
- * This function **enables drag and drop functionality** and reactive styling**.
+ * This function **enables drag and drop functionality**, offers enhanced native input interaction and reactive styling**.
+ *
+ * The titular functionality is **disabled** as of now, since you **cannot programmatically set input file values**.
  *
  * @return {void}
  */
 function dragAndDropSetup(){
+
     const inputIds = ["pfp", "banner"];
     let collectionIndex = [0, 0];
     inputIds.forEach((inputId, i) => {
         const element = document.getElementById(`dnd_${inputId}`),
               hoverClasses = [["bg-gray-700", "outline-gray-300"], activatedStyling[0]],
               nonHoverClasses = [defaultDNDStyling, activatedStyling[1]];
+        /*
         element.addEventListener("dragenter", () => classToggler(element, hoverClasses[collectionIndex[i]], nonHoverClasses[collectionIndex[i]]));
         element.addEventListener("dragleave", () => classToggler(element, nonHoverClasses[collectionIndex[i]], hoverClasses[collectionIndex[i]]));
         element.addEventListener("dragover", (e) => e.preventDefault());
@@ -260,18 +266,21 @@ function dragAndDropSetup(){
                 previewImage(file, i);
             imageButtonLocker(i);
         });
-        document.getElementById(inputId).addEventListener("change", () => {
-            if(collectionIndex[i] === 0) {
-                classToggler(element, nonHoverClasses[1], hoverClasses[0].concat(nonHoverClasses[0]));
-                document.getElementById(`svg${inputIds[i].charAt(0).toUpperCase() + inputIds[i].slice(1)}`).style.fill = svgStyles[1];
-                collectionIndex[i] = 1;
-                imageButtonLocker(i);
-            }
-        });
-
-        const trueInput = document.getElementById(inputId)
+        */
+        const trueInput = document.getElementById(inputId);
         element.addEventListener("click", () => trueInput.click());
         trueInput.addEventListener("change", (e) => {
+            const svgIcon = document.getElementById(`svg${inputIds[i].charAt(0).toUpperCase() + inputIds[i].slice(1)}`);
+            if(collectionIndex[i] === 0) {
+                classToggler(element, nonHoverClasses[1], hoverClasses[0].concat(nonHoverClasses[0]));
+                svgIcon.style.fill = svgStyles[1];
+                collectionIndex[i] = 1;
+            }
+            else if(trueInput.value === "") {
+                classToggler(element, nonHoverClasses[0], hoverClasses[1].concat(nonHoverClasses[1]));
+                svgIcon.style.fill = svgStyles[0];
+                collectionIndex[i] = 0;
+            }
             imageButtonLocker(i);
             previewImage(e.target.files[0], i);
         });
@@ -285,7 +294,7 @@ function dragAndDropSetup(){
             document.getElementById("user_banner").style.backgroundImage = rawPaths[1];
             collectionIndex = [0, 0];
         }
-        imageButtonLocker(i);
+        imageButtonLocker(0, true);
     });
 }
 
