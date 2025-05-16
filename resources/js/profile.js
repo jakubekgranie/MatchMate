@@ -258,7 +258,7 @@ function imageButtonLocker(i, forceLock = false){
     let lock = true;
     if(document.getElementById(ids[i]).value.replace(/^.*[\\/]/, '') !== "" && !forceLock)
         lock = false;
-    changeButtonLock(button, svgIcon, lock);
+    changeButtonLock(button, lock);
 }
 
 /**
