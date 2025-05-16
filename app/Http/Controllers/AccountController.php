@@ -7,8 +7,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rules\Password;
 use App\Rules\Capitalized;
+use Illuminate\Support\Facades\Validator;
 
 class AccountController extends Controller
 {
@@ -64,32 +64,44 @@ class AccountController extends Controller
      */
     public function update(Request $request)
     {
+        $RuleDictionary = new RuleDictionary();
         switch($request->getRequestUri()) {
             case "/profile/text":
-                $RuleDictionary = new RuleDictionary();
-                User::where("id", Auth::id())->update(
-                    $request->validate(
-                        $RuleDictionary->composeRules(['name', 'surname', 'height', 'age', 'weight'], [],true),
-                        $RuleDictionary->composeErrorMessages(['required', 'alpha', 'min', 'max', 'integer', Capitalized::class],
+                $validator = Validator::make(array_filter($request->all()),
+                    $RuleDictionary->composeRules(['name', 'surname', 'height', 'age', 'weight'], [],true),
+                    $RuleDictionary->composeErrorMessages(['required', 'alpha', 'min', 'max', 'integer', Capitalized::class],
                         [
-                           'height.min' => 'Skontaktuj się z Obsługą Klienta.',
-                           'height.max' => 'Skontaktuj się z Obsługą Klienta.',
-                           'age.min' => 'Nieodpowiedni wiek.',
-                           'age.max' => 'Nieodpowiedni wiek.',
-                           'weight.min' => 'Nieodpowiednia waga.',
-                           'weight.max' => 'Nieodpowiednia waga.',
+                            'height.min' => 'Skontaktuj się z Obsługą Klienta.',
+                            'height.max' => 'Skontaktuj się z Obsługą Klienta.',
+                            'age.min' => 'Nieodpowiedni wiek.',
+                            'age.max' => 'Nieodpowiedni wiek.',
+                            'weight.min' => 'Nieodpowiednia waga.',
+                            'weight.max' => 'Nieodpowiednia waga.',
                         ])
-                    )
                 );
-                break;
+                if($validator->fails())
+                    redirect()
+                        ->back()
+                        ->withInput()
+                        ->withErrors($validator);
+                User::where("id", Auth::id())->update($validator->validated());
+                return redirect("/profile")->with(["title" => "Dane zmodyfikowano pomyślnie!", "theme" => 0]);
             case "/profile/images":
                 $names = [];
                 $ruleset = array_unshift(RuleDictionary::$defaultFileRuleset, "sometimes");
-                $toBeSent = [
-                    "pfp" => $ruleset,
-                    "banner" => $ruleset,
-                ];
-                $validated = $request->validate($toBeSent);
+                $validator = Validator::make(array_filter($request->all()),
+                    [
+                        "pfp" => $ruleset,
+                        "banner" => $ruleset,
+                    ],
+                    $RuleDictionary::$defaultFileRuleset
+                );
+                if($validator->fails())
+                    redirect()
+                        ->back()
+                        ->withInput()
+                        ->withErrors($validator);
+                $validated = $validator->validated();
                 foreach ($validated as $pic) {
                     $fieldName = array_search($pic, $validated);
                     $dbName = $fieldName."_name";
@@ -106,17 +118,22 @@ class AccountController extends Controller
     public function updateMail(Request $request)
     {
         $RuleDictionary = new RuleDictionary();
-        User::where("id", Auth::id())->update(
             $request->validate(
                 $RuleDictionary->composeRules(["email"]),
-                $RuleDictionary->composeErrorMessages(["required", "email"], ["max" => "Ten adres e-mail jest za krótki."])
-            )
-        );
+                $RuleDictionary->composeErrorMessages(["required", "email"], ["max" => "Ten adres e-mail jest za długi."])
+            );
         return redirect("/profile");
     }
     public function updatePassword(Request $request)
     {
-
+        $RuleDictionary = new RuleDictionary();
+        User::where("id", Auth::id())->update(
+            $request->validate(
+                $RuleDictionary->composeRules(["password"]),
+                $RuleDictionary->composeErrorMessages(["required", "password", "confirmed"])
+            )
+        );
+        return redirect("/profile");
     }
 
     /**

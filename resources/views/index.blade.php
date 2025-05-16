@@ -6,7 +6,7 @@
             </div>
             <div class="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
                 <div class="text-center text-shadow-lg/12.5">
-                    <h1 class="text-5xl font-semibold tracking-tight text-balance text-gray-900 sm:text-7xl"><span class="bg-linear-to-r/srgb from-green-700 to-green-500 bg-clip-text text-transparent">MatchMate</span>: Twoje nożne rozwiązanie.</h1>
+                    <h1 class="text-5xl font-semibold tracking-tight text-balance text-gray-900 sm:text-7xl"><span class="bg-linear-to-br/srgb from-lime-900 to-lime-500 bg-clip-text text-transparent font-praise tracking-wider -mr-2.5">MatchMate </span>: Twoje nożne rozwiązanie.</h1>
                     <p class="mt-8 text-lg font-medium text-pretty text-gray-500 sm:text-xl/8">MatchMate to innowacyjne narzędzie administracyjne, stworzone z miłością do kapitana, jak i gracza. Z nami organizacja staje się błahostką, a dla Ciebie - przyjemnością.</p>
                     <div class="mt-10 flex items-center justify-center gap-x-6">
                         @guest

@@ -10,8 +10,8 @@
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
-@utility font-playwrite{
-    font-family: 'Playwrite DK Loopet', --font-sans, monospace;
+@utility font-praise{
+    font-family: 'Praise', --font-sans, monospace;
 }
 @utility font-cal-sans {
     font-family: 'Cal Sans', --font-sans, monospace;
@@ -22,13 +22,29 @@
 @utility font-system{
     font-family: 'system-ui', --font-sans, monospace;
 }
-@utility text-lgr{
-    font-size: var(--text-lg) /* 1.125rem = 18px */;
-    line-height: var(--tw-leading, var(--text-lg--line-height) /* calc(1.75 / 1.125) ≈ 1.5556 */);
-}
 @utility svg{
     shape-rendering:geometricPrecision;
     text-rendering:geometricPrecision;
     fill-rule:evenodd;
     clip-rule:evenodd;
+}
+@theme{
+    --animate-popup: popUp 4s ease-in-out forwards;
+    @keyframes popUp {
+        7.5%{
+            top: 14.5%;
+        }
+        12%{
+            top: 12%;
+        }
+        75%{
+            top: 12%;
+        }
+        80%{
+            top: 14.5%;
+        }
+        100%{
+            top: -100vh;
+        }
+    }
 }

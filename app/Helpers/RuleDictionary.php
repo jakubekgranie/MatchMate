@@ -3,8 +3,8 @@
 namespace App\Helpers;
 
 use App\Rules\Capitalized;
+use App\Rules\NoWhitespaces;
 use Illuminate\Validation\Rules\Password;
-
 
 /**
  * **`RuleDictionary`**
@@ -14,33 +14,45 @@ use Illuminate\Validation\Rules\Password;
 class RuleDictionary{
 
     /**
-     * @var array **$defaultRuleset**
+     * @var string[] **`$defaultRuleset`**
      *
      * Hosts **the complete default ruleset**.
      */
     private array $defaultRuleset;
 
     /**
-     * @var array **$defaultErrorMessages**
+     * @var string[] **`$defaultErrorMessages`**
      *
      * Hosts **the complete collection of error messages**.
      */
     private array $defaultErrorMessages;
 
     /**
-     * @var array **$defaultFileRuleset**
+     * @var string[] **`$defaultFileRuleset`**
      *
      * Hosts **the *universal* collection of file rules**. *Rule merging requires manual effort.*
      */
-    public static array $defaultFileRuleset = ["file", "mimes:png,webp", "max:8000000"];
+    public static array $defaultFileRuleset = ["file", "mimes:png", "max:8000000"];
+
+    /**
+     * @var string[] **`$defaultImageErrorMessages`**
+     *
+     * Hosts **the complete collection of image error messages.**
+     */
+    public static array $defaultFileErrorMessages = [
+        "file" => "To nie plik!",
+        "mimes" => "Akceptujemy tylko pliki .png.",
+        "max" => "Plik przekracza rozmiar 8MB."
+    ];
 
     public function __construct()
     {
         $this->defaultRuleset = [
-            'name' => ['required', 'alpha', 'min:2', 'max:63', new Capitalized],
-            'surname' => ['required', 'alpha', 'min:2', 'max:127', new Capitalized],
-            'email' => ['required', 'email', 'max:254'],
-            'password' => ['required', 'confirmed', Password::min(8)
+            // requires/sometimes rules are a part of the logic
+            'name' => ['alpha', 'min:2', 'max:63', new Capitalized],
+            'surname' => ['alpha', 'min:2', 'max:127', new Capitalized], // whitespace search incorporated into alpha
+            'email' => ['email', 'max:254'],
+            'password' => ['confirmed', new NoWhitespaces, Password::min(8)
                 ->max(64) // assuming bcrypt
                 ->letters()
                 ->mixedCase()
@@ -48,14 +60,15 @@ class RuleDictionary{
                 ->symbols()
                 ->uncompromised()
             ],
-            "age" => ["sometimes", "min:18", "max:120", "integer"],
-            "height" => ["sometimes", "min:55", "max:272", "integer"],
-            "weight" =>["sometimes", "min:20", "max:300", "integer"]
+            "age" => ["min:18", "max:120", "integer"],
+            "height" => ["min:55", "max:272", "integer"],
+            "weight" =>["min:20", "max:300", "integer"]
         ];
         $this->defaultErrorMessages = [
             'required' => 'To pole jest wymagane.',
             'alpha' => 'Wykryto niedozwolone znaki.',
             'integer' => 'Wykryto niedozwoloną liczbę.',
+            NoWhitespaces::class => 'Wartość zawiera spację.',
             'min' => 'Ta wartość jest zbyt krótka.',
             'max' => 'Ta wartość jest zbyt długa.',
             'email' => 'To nie adres email.',
@@ -64,7 +77,7 @@ class RuleDictionary{
             'password' => [
                 'password.min' => 'Hasło powinno zawierać min. 8 znaków',
                 'password.max' => 'To hasło jest za długie.',
-                'password.letters' => 'Hasło powinno zawierać co najmniej jedną małą i dużą literę..',
+                'password.letters' => 'Hasło powinno zawierać co najmniej jedną małą i dużą literę.',
                 'password.mixed' => 'Hasło powinno zawierać co najmniej jedną małą i dużą literę.',
                 'password.numbers' => 'Hasło powinno zawierać cyfry.',
                 'password.symbols' => 'Hasło powinno zawierać symbole.',
@@ -80,15 +93,21 @@ class RuleDictionary{
      *
      * @param array $requested Required. **The list of wanted rulesets** from the dictionary.
      * @param array $additionalRules Optional. **Custom rules** to be added into the product.
-     * @param boolean $patch Optional. Defines whether **all rulesets from should feature the `sometimes` rule**. Custom rules are **not affected**.
+     * @param boolean $patch Optional. Defines whether **all rulesets from should feature the `sometimes` rule *(when true)* or the `required` rule *(when false)***. Custom rules are **not affected**.
      * @return array
      */
     public function composeRules(array $requested, array $additionalRules = [], bool $patch = false) : array
     {
         $collected = [];
         foreach($requested as $item)
-            if (array_key_exists($item, $this->defaultRuleset))
-                $collected[$item] = $this->defaultRuleset[$item];
+            if (array_key_exists($item, $this->defaultRuleset)) {
+                $ruleset = $this->defaultRuleset[$item];
+                if($patch)
+                    array_unshift($ruleset, "sometimes");
+                else
+                    array_unshift($ruleset, "required");
+                $collected[$item] = $ruleset;
+            }
         if(count($additionalRules) > 0)
             $collected = array_merge($collected, $additionalRules);
         return $collected;

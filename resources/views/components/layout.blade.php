@@ -1,4 +1,4 @@
-@props(['flexCenter' => false, 'pageTitle' => false, 'scripts' => ''])
+@props(['flexCenter' => false, 'pageTitle' => false, 'scripts' => '', 'navless' => false])
 
 <!doctype html>
 <html lang="pl">
@@ -17,7 +17,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Outfit:wght@100..900&family=Playwrite+DK+Loopet:wght@100..400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Outfit:wght@100..900&family=Praise&display=swap" rel="stylesheet">
     <!--
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self' http://[::1]:5173;
@@ -31,10 +31,12 @@
     @vite(['resources/js/app.js', 'resources/css/app.css'])
     {{ $scripts }}
     <script type="module" src="{{ Vite::asset("resources/js/disableFakeNavBars.js") }}"></script>
-    <title>{{ "MatchMate".($pageTitle ? " - ".$pageTitle : "") }}</title>
+    <title>{{ "MatchMate".($pageTitle ? " - $pageTitle" : "") }}</title>
 </head>
 <body class="{{ request()->is("/") ? "bg-white h-[100vh] overflow-hidden" : "bg-stone-200" }} {{ $flexCenter ? "min-h-[100vh]" : "" }}">
-    <x-nav-bar/>
+    @if(!$navless)
+        <x-nav-bar/>
+    @endif
     @if($flexCenter)
         <div class="flex flex-col items-center justify-center min-h-[calc(100vh-5.75rem)]">
     @endif

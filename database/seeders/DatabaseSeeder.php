@@ -7,6 +7,8 @@ use App\Models\Role;
 use App\Models\Team;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\UserChangeStatuses;
+use App\Models\UserChangeTypes;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -55,5 +57,11 @@ class DatabaseSeeder extends Seeder
             "weight" => 76,
             "age" => 28
         ]);
+
+        UserChangeTypes::create(["type" => "password_change"]);
+        UserChangeTypes::create(["type" => "email_change"]);
+        UserChangeStatuses::create(["status" => "pending"]);
+        UserChangeStatuses::create(["status" => "expired"]);
+        UserChangeStatuses::create(["status" => "overriden"]);
     }
 }

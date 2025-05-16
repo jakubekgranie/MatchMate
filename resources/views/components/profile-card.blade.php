@@ -1,5 +1,5 @@
 @props(["user", "previewMode" => false])
-<div class="flex items-center flex-col profileCard cursor-pointer max-w-96">
+<div class="flex items-center flex-col profileCard cursor-pointer max-w-96 w-full">
     <div class="border-2 {{ is_null($user->teams) ? 'border-gray-500/45' : "border-[$user->teams->teamColor]"}} rounded-xl shadow-sm shadow-gray-500">
         <div @if($previewMode) id="user_banner" @endif style="background-image: url('{{ asset(is_null($user->banner_name) ? "images/defaults/banner.png" : "storage/images/banners/".$user->banner_name) }}')" class="h-18 border-b-3 border-gray-500/45 bg-cover bg-position-[center_top] rounded-t-[calc(1rem-5px)]"></div>
         <div class="flex items-center px-7 gap-4 bg-gray-50 rounded-b-[calc(1rem-5px)] bg-[url(/public/images/cardbg.png)] bg-no-repeat bg-contain bg-position-[left_1rem_center]">

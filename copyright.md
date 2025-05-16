@@ -14,6 +14,7 @@
 ## 3. Freepik
  - [Ikona zdjęcia (przycisk)](https://www.flaticon.com/free-icons/photo)
  - [Ikona profilu (przycisk)](https://www.flaticon.com/free-icons/user)
+ - [Ikona powodzenia (powiadomienie)](https://www.flaticon.com/free-icons/correct)
 
 ## 4. Vecteezy
  - [Ikona aplikacji](https://www.vecteezy.com/vector-art/550584-soccer-ball-vector-icon)

@@ -1,4 +1,4 @@
-@props(['type' => false, 'label' => true, 'overrideGrid' => false, 'containerClass' => false])
+@props(['type' => false, 'label' => true, 'overrideGrid' => false, 'containerClass' => false, 'noErrors' => false])
 @php
     $name = $attributes->get('name');
 @endphp
@@ -12,7 +12,9 @@
             <div class="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-400/75 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
                 <input type="{{ !$type ? 'text' : $type }}" id="{{ $name }}" {{$attributes->merge(['class' => "block min-w-0 grow py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-500 focus:outline-none sm:text-sm/6"])}}>
             </div>
-            <x-input-error :$name/>
+            @if(!$noErrors)
+                <x-input-error :$name/>
+            @endif
         </div>
 @if(!$overrideGrid)
     </div>

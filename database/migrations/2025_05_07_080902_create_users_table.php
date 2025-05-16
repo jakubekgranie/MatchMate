@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Team::class)
                 ->nullable()
-                ->constrained()
+                ->constrained("teams")
                     ->cascadeOnUpdate()
                     ->nullOnDelete();
             $table->boolean('is_reserve')->default(false);
@@ -36,7 +36,7 @@ return new class extends Migration
                 /**
                  * Deletion observer present (sets to guest level permissions). @see \App\Providers\AppServiceProvider
                  */
-                ->constrained()
+                ->constrained("roles")
                     ->cascadeOnUpdate();
             $table->rememberToken();
             $table->timestamps();

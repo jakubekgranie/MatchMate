@@ -16,15 +16,15 @@ return new class extends Migration
         Schema::create('league_match', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(League::class)
-                ->constrained()
+                ->constrained("leagues")
                     ->cascadeOnDelete()
                     ->cascadeOnUpdate();
             $table->foreignIdFor(Team::class, "home_team_id")
-                ->constrained()
+                ->constrained("teams")
                     ->cascadeOnDelete()
                     ->cascadeOnUpdate();
             $table->foreignIdFor(Team::class, "away_team_id")
-                ->constrained()
+                ->constrained("teams")
                     ->cascadeOnDelete()
                     ->cascadeOnUpdate();
             $table->timestamps();
