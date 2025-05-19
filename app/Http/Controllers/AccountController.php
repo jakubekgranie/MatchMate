@@ -93,7 +93,8 @@ class AccountController extends Controller
                 return redirect("/profile")->with(["title" => "Dane zmodyfikowano pomyślnie!"]);
             case "/profile/images":
                 $names = [];
-                $ruleset = array_unshift(RuleDictionary::$defaultFileRuleset, "sometimes");
+                $ruleset = RuleDictionary::$defaultFileRuleset;
+                array_unshift($ruleset, "sometimes");
                 $validator = Validator::make(array_filter($request->all()),
                     [
                         "pfp" => $ruleset,

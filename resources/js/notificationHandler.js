@@ -28,3 +28,5 @@ function notify(title, theme = 0){
     notification.classList.add("flex");
     notification.classList.remove("hidden");
 }
+
+window.notify = notify;

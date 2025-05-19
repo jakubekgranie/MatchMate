@@ -28,12 +28,12 @@
     <link rel="canonical" href="">
     <link rel="icon" type="image/png" href="">
     -->
-    @vite(['resources/js/app.js', 'resources/css/app.css'])
+    @vite(['resources/js/app.js', 'resources/css/app.css', "resources/js/disableFakeNavBars.js"])
     {{ $scripts }}
     <script type="module" src="{{ Vite::asset("resources/js/disableFakeNavBars.js") }}"></script>
     <title>{{ "MatchMate".($pageTitle ? " - $pageTitle" : "") }}</title>
 </head>
-<body class="{{ request()->is("/") ? "bg-white h-[100vh] overflow-hidden" : "bg-stone-200" }} {{ $flexCenter ? "min-h-[100vh]" : "" }}">
+<body class="{{ request()->is("/") ? "bg-white h-[100vh] overflow-hidden" : "bg-stone-200" }}{{ $flexCenter ? " min-h-[100vh]" : "" }}">
     @if(!$navless)
         <x-nav-bar/>
     @endif
