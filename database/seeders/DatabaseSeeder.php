@@ -52,7 +52,7 @@ class DatabaseSeeder extends Seeder
             "name" => "Natan",
             "surname" => "Agent",
             "email" => "agencik@gmail.com",
-            "password" => Hash::make("testowy"),
+            "password" => Hash::make("'Testowy123'"),
             "height" => 192,
             "weight" => 76,
             "age" => 28
@@ -63,5 +63,6 @@ class DatabaseSeeder extends Seeder
         UserChangeStatuses::create(["status" => "pending"]);
         UserChangeStatuses::create(["status" => "expired"]);
         UserChangeStatuses::create(["status" => "overriden"]);
+        UserChangeStatuses::create(["status" => "completed"]);
     }
 }

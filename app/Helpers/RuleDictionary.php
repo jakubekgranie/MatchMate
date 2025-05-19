@@ -52,7 +52,7 @@ class RuleDictionary{
             'name' => ['alpha', 'min:2', 'max:63', new Capitalized],
             'surname' => ['alpha', 'min:2', 'max:127', new Capitalized], // whitespace search incorporated into alpha
             'email' => ['email', 'max:254'],
-            'password' => ['confirmed', new NoWhitespaces, Password::min(8)
+            'password' => [new NoWhitespaces, Password::min(8)
                 ->max(64) // assuming bcrypt
                 ->letters()
                 ->mixedCase()
@@ -102,6 +102,8 @@ class RuleDictionary{
         foreach($requested as $item)
             if (array_key_exists($item, $this->defaultRuleset)) {
                 $ruleset = $this->defaultRuleset[$item];
+                if($item == "password" && request()->is("/register"))
+                    array_unshift($ruleset, "confirmed");
                 if($patch)
                     array_unshift($ruleset, "sometimes");
                 else
@@ -125,15 +127,14 @@ class RuleDictionary{
     public function composeErrorMessages(array $requested, array $additionalRules = []) : array
     {
         $collected = [];
-        $oldAR = $additionalRules;
         foreach($requested as $item) {
             foreach ($additionalRules as $key => $value) {
-                if (preg_match("/\." . preg_quote($item) . "$/", $key)) {
+                if (preg_match("/\.".preg_quote($item)."$/", $key)) {
                     $collected[$key] = $value;
                     unset($additionalRules[$key]);
                 }
             }
-            if($item === "password")
+            if($item == "password")
                 $collected = array_merge($collected, $this->defaultErrorMessages[$item]);
             else
                 $collected[$item] = $this->defaultErrorMessages[$item];

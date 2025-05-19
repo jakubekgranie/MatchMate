@@ -3,12 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\RuleDictionary;
+use App\Mail\EmailChange;
+use App\Models\PendingUserChanges;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use App\Rules\Capitalized;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class AccountController extends Controller
 {
@@ -80,12 +85,12 @@ class AccountController extends Controller
                         ])
                 );
                 if($validator->fails())
-                    redirect()
+                    return redirect()
                         ->back()
                         ->withInput()
                         ->withErrors($validator);
                 User::where("id", Auth::id())->update($validator->validated());
-                return redirect("/profile")->with(["title" => "Dane zmodyfikowano pomyślnie!", "theme" => 0]);
+                return redirect("/profile")->with(["title" => "Dane zmodyfikowano pomyślnie!"]);
             case "/profile/images":
                 $names = [];
                 $ruleset = array_unshift(RuleDictionary::$defaultFileRuleset, "sometimes");
@@ -94,10 +99,10 @@ class AccountController extends Controller
                         "pfp" => $ruleset,
                         "banner" => $ruleset,
                     ],
-                    $RuleDictionary::$defaultFileRuleset
+                    RuleDictionary::$defaultFileErrorMessages
                 );
                 if($validator->fails())
-                    redirect()
+                    return redirect()
                         ->back()
                         ->withInput()
                         ->withErrors($validator);
@@ -118,11 +123,55 @@ class AccountController extends Controller
     public function updateMail(Request $request)
     {
         $RuleDictionary = new RuleDictionary();
-            $request->validate(
-                $RuleDictionary->composeRules(["email"]),
-                $RuleDictionary->composeErrorMessages(["required", "email"], ["max" => "Ten adres e-mail jest za długi."])
-            );
-        return redirect("/profile");
+        $validator = Validator::make($request->only('email'),
+            $RuleDictionary->composeRules(["email"]),
+            $RuleDictionary->composeErrorMessages(["required", "email"], ["max" => "Ten adres e-mail jest za długi."])
+        );
+        if($validator->fails())
+            return redirect()
+                ->back()
+                ->withInput()
+                ->withErrors($validator);
+        if(User::where("email", $validator->validated()["email"])->exists()) // check if mail isn't in use
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with(["title" => "Ten adres e-mail jest w użyciu.", "theme" => 2]);
+
+        PendingUserChanges::where(["user_id" => Auth::id(), "user_change_statuses_id" => 1])->update(["user_change_statuses_id" => 3]);
+        do {
+            $uuid = Str::uuid()->toString(); // ensure uniqueness
+        } while(PendingUserChanges::where('url_key', $uuid)->exists());
+        PendingUserChanges::create([
+            "user_id" => Auth::id(),
+            "url_key" => $uuid,
+            "user_change_types_id" => 2,
+            "desiredValue" => $validator->validated()["email"]
+        ]);
+        try {
+            Mail::to(Auth::user()->getEmailForVerification())->queue(new EmailChange($uuid, Auth::user()));
+            return redirect("/profile")->with(["title" => "Udało się! Sprawdź swoją skrzynkę e-mail, by kontynuować.", "theme" => 1]);
+        }
+        catch (Exception) {
+            return redirect("/profile")->with(["title" => "Wystąpił nieznany błąd.", "theme" => 2]);
+        }
+    }
+    public function confirmChange($uuid){
+        $action = PendingUserChanges::where(['user_id' => Auth::id(),'url_key' => $uuid, 'user_change_statuses_id' => 1])->first();
+        if(!is_null($action)) {
+            if(User::where("email", $action->desiredValue)->exists()) { // check if mail isn't in use
+                $action->update(["user_change_statuses_id" => 2]);
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->with(["title" => "Ten adres e-mail jest w użyciu.", "theme" => 2]);
+            }
+            User::where(['id' => Auth::id()])->update(["email" => $action->desiredValue]);
+            $action->update(["user_change_statuses_id" => 4]);
+            return redirect("/profile")->with(["title" => "Zatwierdzono zmiany."]);
+        }
+        else
+            return redirect("/profile")->with(["title" => "Nieznane żądanie. Spróbuj ponownie.", "theme" => 2]);
     }
     public function updatePassword(Request $request)
     {

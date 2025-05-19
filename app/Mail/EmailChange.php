@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -9,17 +10,13 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class EmailChange extends Mailable
+class EmailChange extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
-
     /**
      * Create a new message instance.
      */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct(private readonly string $uuid, private readonly User $user){}
 
     /**
      * Get the message envelope.
@@ -39,6 +36,10 @@ class EmailChange extends Mailable
     {
         return new Content(
             view: 'mail.email-change',
+            with: [
+                'uuid' => $this->uuid,
+                'user' => $this->user,
+            ]
         );
     }
 

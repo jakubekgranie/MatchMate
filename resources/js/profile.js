@@ -252,8 +252,7 @@ const defaultDNDStyling = ["bg-gray-800", "outline-gray-500", "hover:outline-gra
  * @see `changeButtonLock()`
  */
 function imageButtonLocker(i, forceLock = false){
-    const button = document.getElementById("imageSubmission"),
-          svgIcon = document.getElementById("svgIconImages"),
+    const button = document.getElementById("imageFormSubmission"),
           ids = ["pfp", "banner"];
     let lock = true;
     if(document.getElementById(ids[i]).value.replace(/^.*[\\/]/, '') !== "" && !forceLock)

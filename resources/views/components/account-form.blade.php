@@ -8,7 +8,7 @@
                 {{ $slot }}
                 <div class="sm:col-span-6 sm:col-start-2 font-medium flex items-center -mt-4 -mb-5 cursor-pointer">
                     <input type="checkbox" name="remember" id="remember" class="cursor-pointer accent-indigo-600">
-                    <label for="remember" class="sm:text-sm/6">&nbsp;&nbsp;Zapamiętaj mnie</label>
+                    <label for="remember" class="sm:text-sm/6 cursor-pointer">&nbsp;&nbsp;Zapamiętaj mnie</label>
                 </div>
             </div>
         </div>

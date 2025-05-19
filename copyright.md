@@ -7,14 +7,14 @@
  - [Ikona zapisu (przycisk)](https://www.flaticon.com/free-icons/save)
  - [Ikona przywrócenia (przycisk)](https://www.flaticon.com/free-icon/refresh-arrow_9923688?term=reset&page=1&position=11&origin=tag&related_id=9923688)
  - [Ikona ołówka (przycisk)](https://www.flaticon.com/free-icon/pencil_1828911?term=pencil&page=1&position=1&origin=tag&related_id=1828911)
-
-## 2. 8icons
- - [Domyślna ikona klubu](https://icons8.com)
-
-## 3. Freepik
  - [Ikona zdjęcia (przycisk)](https://www.flaticon.com/free-icons/photo)
  - [Ikona profilu (przycisk)](https://www.flaticon.com/free-icons/user)
  - [Ikona powodzenia (powiadomienie)](https://www.flaticon.com/free-icons/correct)
+ - [Ikona koperty (powiadomienie)](https://www.flaticon.com/free-icons/email)
+ - [Ikona zagrożenia (powiadomienie)](https://www.flaticon.com/free-icons/alert)
+
+## 2. 8icons
+ - [Domyślna ikona klubu](https://icons8.com)
 
 ## 4. Vecteezy
  - [Ikona aplikacji](https://www.vecteezy.com/vector-art/550584-soccer-ball-vector-icon)
