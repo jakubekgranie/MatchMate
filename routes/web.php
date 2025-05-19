@@ -6,7 +6,7 @@ use App\Http\Controllers\SessionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', MainPageController::class);
-Route::get('/test', function () {return view("mail.email-change", ["uuid" => "a", "user" => Auth::user()]);});
+Route::get('/test', function () {return view("mail.credentials-change", ["uuid" => "a", "user" => Auth::user()]);});
 
 Route::controller(SessionController::class)->middleware('guest')->group(function () {
     Route::get('/login', 'create');

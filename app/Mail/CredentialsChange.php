@@ -10,13 +10,14 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class EmailChange extends Mailable implements ShouldQueue
+class CredentialsChange extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
+
     /**
      * Create a new message instance.
      */
-    public function __construct(private readonly string $uuid, private readonly User $user){}
+    public function __construct(private readonly string $uuid, private readonly User $user, private readonly int $index){}
 
     /**
      * Get the message envelope.
@@ -35,10 +36,11 @@ class EmailChange extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            view: 'mail.email-change',
+            view: 'mail.credentials-change',
             with: [
                 'uuid' => $this->uuid,
                 'user' => $this->user,
+                'headerIndex' => $this->index
             ]
         );
     }

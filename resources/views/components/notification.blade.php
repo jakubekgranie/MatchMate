@@ -4,8 +4,7 @@
         <p id="notification_feed" class="text-gray-50 font-semibold">Sukces!</p>
     </div>
     <div class="hidden bg-red-600 flex"></div> <!-- Class renderer, flex added for ubiquity -->
-    <script src="{{ Vite::asset("resources/js/notificationHandler.js") }}"></script>
     <script>
-        notify({{ Js::from(session('title')) }}, {{ Js::from(session('theme') ? session('theme') : 0) }});
+        window.addEventListener('load', () => notify({{ Js::from(session('title')) }}, {{ Js::from(session('theme') ? session('theme') : 0) }}));
     </script>
 @endif

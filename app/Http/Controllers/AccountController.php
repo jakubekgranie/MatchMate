@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\RuleDictionary;
-use App\Mail\EmailChange;
+use App\Mail\CredentialsChange;
 use App\Models\PendingUserChanges;
 use App\Models\User;
 use Exception;
@@ -93,14 +93,14 @@ class AccountController extends Controller
                 return redirect("/profile")->with(["title" => "Dane zmodyfikowano pomyślnie!"]);
             case "/profile/images":
                 $names = [];
-                $ruleset = RuleDictionary::$defaultFileRuleset;
-                array_unshift($ruleset, "sometimes");
                 $validator = Validator::make(array_filter($request->all()),
-                    [
-                        "pfp" => $ruleset,
-                        "banner" => $ruleset,
-                    ],
-                    RuleDictionary::$defaultFileErrorMessages
+                    $RuleDictionary->composeRules(['pfp', 'banner'], [],true),
+                    $RuleDictionary->composeErrorMessages(
+                        ['file', 'mimes'],
+                        [
+                            'banner.mimes' => 'Akceptujemy tylko pliki .png oraz .jpg.',
+                            'max' => 'Ten plik jest za duży (max. 8MB).'
+                        ])
                 );
                 if($validator->fails())
                     return redirect()
@@ -150,7 +150,7 @@ class AccountController extends Controller
             "desiredValue" => $validator->validated()["email"]
         ]);
         try {
-            Mail::to(Auth::user()->getEmailForVerification())->queue(new EmailChange($uuid, Auth::user()));
+            Mail::to(Auth::user()->getEmailForVerification())->queue(new CredentialsChange($uuid, Auth::user(), 1));
             return redirect("/profile")->with(["title" => "Udało się! Sprawdź swoją skrzynkę e-mail, by kontynuować.", "theme" => 1]);
         }
         catch (Exception) {

@@ -27,24 +27,6 @@ class RuleDictionary{
      */
     private array $defaultErrorMessages;
 
-    /**
-     * @var string[] **`$defaultFileRuleset`**
-     *
-     * Hosts **the *universal* collection of file rules**. *Rule merging requires manual effort.*
-     */
-    public static array $defaultFileRuleset = ["file", "mimes:png", "max:8000000"];
-
-    /**
-     * @var string[] **`$defaultImageErrorMessages`**
-     *
-     * Hosts **the complete collection of image error messages.**
-     */
-    public static array $defaultFileErrorMessages = [
-        "file" => "To nie plik!",
-        "mimes" => "Akceptujemy tylko pliki .png.",
-        "max" => "Plik przekracza rozmiar 8MB."
-    ];
-
     public function __construct()
     {
         $this->defaultRuleset = [
@@ -62,7 +44,9 @@ class RuleDictionary{
             ],
             "age" => ["min:18", "max:120", "integer"],
             "height" => ["min:55", "max:272", "integer"],
-            "weight" =>["min:20", "max:300", "integer"]
+            "weight" =>["min:20", "max:300", "integer"],
+            "pfp" => ["file", "mimes:png", "max:8000000"],
+            "banner" => ["file", "mimes:png,jpg", "max:8000000"]
         ];
         $this->defaultErrorMessages = [
             'required' => 'To pole jest wymagane.',
@@ -82,7 +66,10 @@ class RuleDictionary{
                 'password.numbers' => 'Hasło powinno zawierać cyfry.',
                 'password.symbols' => 'Hasło powinno zawierać symbole.',
                 'password.uncompromised' => 'Użyj innego hasła.',
-            ]
+            ],
+            "file" => "To nie plik!",
+            "mimes" => "Akceptujemy tylko pliki .png.",
+            // "max" => "Plik przekracza rozmiar 8MB."
         ];
     }
 

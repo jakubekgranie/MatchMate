@@ -2,8 +2,7 @@
     <div class="outline-lime-400 top-35 hidden"></div> <!-- A storage element -->
     <x-notification/>
     <x-slot:scripts>
-        <script type="module" src="{{ Vite::asset("resources/js/profile.js") }}"></script>
-        <script type="module" src="{{ Vite::asset("resources/js/clickableCard.js") }}"></script>
+        @vite(["resources/js/profile.js", "resources/js/clickableCard.js", "resources/js/notificationHandler.js"])
     </x-slot:scripts>
     <div class="border-2 border-gray-500/65 bg-white/30 rounded-2xl flex flex-col gap-12 py-7 px-9.5 shadow-sm shadow-gray-300 my-13">
         <div class="flex justify-between items-center">
