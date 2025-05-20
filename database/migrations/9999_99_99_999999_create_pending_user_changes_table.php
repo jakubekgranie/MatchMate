@@ -29,7 +29,7 @@ return new class extends Migration
                 ->constrained('user_change_statuses')
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
-            $table->string('desiredValue');
+            $table->string('desired_value')->nullable();
             $table->timestamps();
             $table->unique(['user_id', 'url_key']);
         });

@@ -16,27 +16,26 @@
             <h1
                 class="md:text-3xl font-bold lg:text-center mb-6"
                 style="font-size: inherit; font-weight: 700; margin: 0 0 1.5rem;">
-                Potwierdzenie zmiany {{ $headerIndex == 0 ? "hasła" : "adresu e-mail" }}
+                Wniosek użytkownika {{ "$user->name $user->surname" }}
             </h1>
-            <div class="md:text-lg max-w-140 mb-2" style="margin-bottom: 0.5rem;">
+            <div class="md:text-lg max-w-140 mb-2" style="margin: 0 auto 0.5rem auto; text-align: center">
                 <p class="mb-3" style="margin: 0 0 0.75rem;">
                     Cześć
-                    <strong style="font-weight: bolder;">{{ $user->name }}</strong>,
+                    <strong style="font-weight: bolder;">{{ $recipient }}</strong>,
                 </p>
-                <p style="margin: 0;">Oto twój link do potwierdzenia zmiany {{ $headerIndex == 0 ? "hasła" : "adresu e-mail" }}:</p>
+                <p style="margin: 0;">Użytkownik <strong>{{ "$user->name $user->surname" }}</strong> złożył wniosek o dodanie do drużyny.</p>
             </div>
-            <a href="http://127.0.0.1:8000/profile/action/{{ $uuid }}">
-                <p style="text-decoration: underline; color: darkblue; text-align: center; margin: 6px;">Kliknij tutaj, by potwierdzić zmianę</p>
-            </a>
-            <div class="md:text-lg max-w-140 mb-2" style="margin-bottom: 0.5rem;">
-                <p class="mb-6" style="margin: 0 0 1.5rem;">
-                    Jeżeli nie chciałeś/aś wykonywać żadnych zmian, zignoruj tą wiadomość. {{ $headerIndex == 0 ? "Twoje hasło" : "Twój adres e-mail" }} nie
-                    zostanie zmienion{{ $headerIndex == 0 ? "e" : "y" }}.
-                </p>
-                <div class="text-center" style="text-align: center;">
-                    Z poważaniem,
-                    <p style="margin: 0;"><strong style="font-weight: bolder;">Zespół MatchMate</strong></p>
-                </div>
+            <div style="margin: 2rem 0">
+                <a href="http://127.0.0.1:8000/profile/action/{{ $uuid }}">
+                    <p style="text-decoration: underline; color: darkblue; text-align: center; margin: 6px;">Kliknij tutaj, by zaakceptować prośbę</p>
+                </a>
+                <a href="http://127.0.0.1:8000/profile/action/{{ $uuid }}/reject">
+                    <p style="text-decoration: underline; color: darkblue; text-align: center; margin: 6px;">Kliknij tutaj, by odrzucić prośbę</p>
+                </a>
+            </div>
+            <div class="md:text-lg max-w-140 mb-2 text-center" style="text-align: center; margin: 0 auto 0.5rem auto;">
+                Z poważaniem,
+                <p style="margin: 0;"><strong style="font-weight: bolder;">Zespół MatchMate</strong></p>
             </div>
         </div>
         <div

@@ -28,7 +28,7 @@
     <link rel="canonical" href="">
     <link rel="icon" type="image/png" href="">
     -->
-    @vite(['resources/js/app.js', 'resources/css/app.css', "resources/js/disableFakeNavBars.js"])
+    @vite(['resources/js/app.js', 'resources/css/app.css', "resources/js/disableFakeNavBars.js", "resources/js/notificationHandler.js"])
     {{ $scripts }}
     <title>{{ "MatchMate".($pageTitle ? " - $pageTitle" : "") }}</title>
 </head>
@@ -39,6 +39,7 @@
     @if($flexCenter)
         <div class="flex flex-col items-center justify-center min-h-[calc(100vh-5.75rem)]">
     @endif
+    <x-notification/>
     <main>
         {{ $slot }}
     </main>

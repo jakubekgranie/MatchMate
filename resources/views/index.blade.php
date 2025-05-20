@@ -15,7 +15,9 @@
                         @auth
                             <a href="/profile" class="rounded-md  bg-radial from-indigo-600/90 to-indigo-700 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 duration-100">Mój profil</a>
                         @endauth
-                        <a href="#" class="text-sm/6 font-semibold text-gray-900">Learn more <span aria-hidden="true">→</span></a>
+                        @guest
+                            <a href="/login" class="text-sm/6 font-semibold text-gray-900">Zaloguj się <span aria-hidden="true">→</span></a>
+                        @endguest
                     </div>
                 </div>
             </div>

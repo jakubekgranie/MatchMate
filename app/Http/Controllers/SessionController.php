@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\RuleDictionary;
+use App\Models\User;
 use App\Rules\Capitalized;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -18,20 +20,30 @@ class SessionController extends Controller
         return view('session.login');
     }
     public function store(Request $request){
-        $RuleDictionary = new RuleDictionary();
-        $validator = Validator::make($request->all(),
-            $RuleDictionary->composeRules(['email', 'password'])
-        );
-        if($validator->fails() || !Auth::attempt(request(['email', 'password']), $request->has("remember")))
-            return redirect()
-                ->back()
-                ->withInput()
-                ->withErrors(["email" => "Nieprawidłowy adres e-mail lub hasło."]);
-        request()->session()->regenerate();
-        return redirect('/profile')->with(['title' => 'Zalogowano!', 'theme' => 0]);
+        if(!Auth::user()) {
+            $RuleDictionary = new RuleDictionary();
+            $validator = Validator::make($request->only('email', 'password'),
+                $RuleDictionary->composeRules(['email', 'password'])
+            );
+
+            $user = User::where('email', $validator->validated()['email'])->first();
+            if(!$user || !Hash::check($validator->validated()['password'], $user->password))
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->withErrors(["email" => "Nieprawidłowy adres e-mail lub hasło."]);
+
+            $validated = $validator->validated();
+            if($user->awaiting_review)
+                return view('session.limbo', ["user" => $user]);
+            Auth::login($user, $request->has("remember"));
+            request()->session()->regenerate();
+            return redirect('/profile')->with(['title' => 'Zalogowano!', 'theme' => 0]);
+        }
+        else
+            return redirect('/profile');
     }
     public function show(){
-        session("title", "a");
         return view('session.profile');
     }
     public function edit(){

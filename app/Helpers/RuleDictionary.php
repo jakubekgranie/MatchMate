@@ -3,7 +3,9 @@
 namespace App\Helpers;
 
 use App\Rules\Capitalized;
+use App\Rules\ExpandedAlpha;
 use App\Rules\NoWhitespaces;
+use App\Rules\ValidTeam;
 use Illuminate\Validation\Rules\Password;
 
 /**
@@ -31,9 +33,10 @@ class RuleDictionary{
     {
         $this->defaultRuleset = [
             // requires/sometimes rules are a part of the logic
-            'name' => ['alpha', 'min:2', 'max:63', new Capitalized],
-            'surname' => ['alpha', 'min:2', 'max:127', new Capitalized], // whitespace search incorporated into alpha
+            'name' => [new ExpandedAlpha, 'min:2', 'max:63', new Capitalized],
+            'surname' => [new ExpandedAlpha, 'min:2', 'max:127', new Capitalized], // whitespace search incorporated into alpha
             'email' => ['email', 'max:254'],
+            'team' => [new ValidTeam],
             'password' => [new NoWhitespaces, Password::min(8)
                 ->max(64) // assuming bcrypt
                 ->letters()
@@ -50,7 +53,8 @@ class RuleDictionary{
         ];
         $this->defaultErrorMessages = [
             'required' => 'To pole jest wymagane.',
-            'alpha' => 'Wykryto niedozwolone znaki.',
+            ValidTeam::class => 'Nie znaleziono drużyny.',
+            ExpandedAlpha::class => 'Wykryto niedozwolone znaki.',
             'integer' => 'Wykryto niedozwoloną liczbę.',
             NoWhitespaces::class => 'Wartość zawiera spację.',
             'min' => 'Ta wartość jest zbyt krótka.',
@@ -59,6 +63,7 @@ class RuleDictionary{
             Capitalized::class => 'Niepoprawna wysokość znaków.',
             'confirmed' => 'Hasła się nie zgadzają.',
             'password' => [
+                'password.'.NoWhitespaces::class => 'Hasło nie może zawierać spacji.',
                 'password.min' => 'Hasło powinno zawierać min. 8 znaków',
                 'password.max' => 'To hasło jest za długie.',
                 'password.letters' => 'Hasło powinno zawierać co najmniej jedną małą i dużą literę.',

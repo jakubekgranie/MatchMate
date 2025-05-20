@@ -10,14 +10,14 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class CredentialsChange extends Mailable implements ShouldQueue
+class ReviewUser extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(private readonly string $uuid, private readonly User $user, private readonly int $index){}
+    public function __construct(private readonly User $user, private readonly string $uuid, private readonly string $recipient){}
 
     /**
      * Get the message envelope.
@@ -25,8 +25,7 @@ class CredentialsChange extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: 'noreply@matchmate.pl',
-            subject: 'Zmiana personaliów konta',
+            subject: 'Przegląd użytkownika',
         );
     }
 
@@ -36,11 +35,11 @@ class CredentialsChange extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            view: 'mail.credentials-change',
+            view: 'mail.review-user',
             with: [
-                'uuid' => $this->uuid,
                 'user' => $this->user,
-                'headerIndex' => $this->index
+                'uuid' => $this->uuid,
+                'recipient' => $this->recipient,
             ]
         );
     }

@@ -12,7 +12,7 @@ class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
-    public function teams() : belongsTo
+    public function team() : belongsTo
     {
         return $this->belongsTo(Team::class);
     }
@@ -31,6 +31,7 @@ class User extends Authenticatable
         'password',
         'pfp_path',
         'banner_path',
+        'team_id'
     ];
 
     /**

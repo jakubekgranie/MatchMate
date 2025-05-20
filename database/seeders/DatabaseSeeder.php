@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\AccountLevel;
 use App\Models\League;
 use App\Models\Role;
 use App\Models\Team;
@@ -36,30 +37,35 @@ class DatabaseSeeder extends Seeder
         Team::factory($team_count)->create();
 
         for($user_count = 0; $user_count < $team_count * 8; $user_count++) {
-            $team_id = 0;
             $teams = Team::with('users')->get();
-            foreach($teams as $team)
-                if (sizeof($team->users) == 8)
-                    $team_id++;
+            $targetTeam = $teams->first(function ($team) {
+                return $team->users->count() < 8;
+            });
+            $role = $targetTeam->users->isEmpty() ? 2 : 1;
 
             User::factory()->create([
-                'team_id' => $team_id + 1,
-                'is_reserve' => sizeof($teams[$team_id]->users) > 4,
+                'team_id' => $targetTeam->id,
+                'is_reserve' => $targetTeam->users->count() > 4,
+                'role_id' => $role,
             ]);
         }
 
         User::create([
             "name" => "Natan",
             "surname" => "Agent",
+            "team_id" => 1,
             "email" => "agencik@gmail.com",
-            "password" => Hash::make("'Testowy123'"),
+            "password" => Hash::make("Testowy123!"),
             "height" => 192,
             "weight" => 76,
-            "age" => 28
+            "age" => 28,
+            "awaiting_review" => false
         ]);
 
         UserChangeTypes::create(["type" => "password_change"]);
         UserChangeTypes::create(["type" => "email_change"]);
+        UserChangeTypes::create(["type" => "account_deletion"]);
+        UserChangeTypes::create(["type" => "user_review"]);
         UserChangeStatuses::create(["status" => "pending"]);
         UserChangeStatuses::create(["status" => "expired"]);
         UserChangeStatuses::create(["status" => "overriden"]);

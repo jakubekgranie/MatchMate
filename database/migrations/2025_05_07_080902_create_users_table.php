@@ -21,6 +21,7 @@ return new class extends Migration
                     ->cascadeOnUpdate()
                     ->nullOnDelete();
             $table->boolean('is_reserve')->default(false);
+            $table->boolean('awaiting_review')->default(true);
             $table->string('name');
             $table->string('surname');
             $table->string('email')->unique();
