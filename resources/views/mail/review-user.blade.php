@@ -23,14 +23,17 @@
                     Cześć
                     <strong style="font-weight: bolder;">{{ $recipient }}</strong>,
                 </p>
-                <p style="margin: 0;">Użytkownik <strong>{{ "$user->name $user->surname" }}</strong> złożył wniosek o dodanie do drużyny.</p>
+                <p style="margin: 0;">Użytkownik <strong>{{ "$user->name $user->surname" }} ({{ $user->email }})</strong> złożył wniosek o dodanie do drużyny.</p>
             </div>
             <div style="margin: 2rem 0">
-                <a href="http://127.0.0.1:8000/profile/action/{{ $uuid }}">
-                    <p style="text-decoration: underline; color: darkblue; text-align: center; margin: 6px;">Kliknij tutaj, by zaakceptować prośbę</p>
+                <a href="http://127.0.0.1:8000/profile/action/{{ $uuid }}/dashboard">
+                    <p style="text-decoration: underline; color: darkblue; text-align: center; margin: 6px;">Kliknij tutaj, by rozważyć prośbę.</p>
+                </a>
+                <a href="http://127.0.0.1:8000/profile/action/{{ $uuid }}/accept">
+                    <p style="text-decoration: underline; color: darkblue; text-align: center; margin: 6px;">Kliknij tutaj, by bezpośrednio zaakceptować prośbę.</p>
                 </a>
                 <a href="http://127.0.0.1:8000/profile/action/{{ $uuid }}/reject">
-                    <p style="text-decoration: underline; color: darkblue; text-align: center; margin: 6px;">Kliknij tutaj, by odrzucić prośbę</p>
+                    <p style="text-decoration: underline; color: darkblue; text-align: center; margin: 6px;">Kliknij tutaj, by bezpośrednio odrzucić prośbę.</p>
                 </a>
             </div>
             <div class="md:text-lg max-w-140 mb-2 text-center" style="text-align: center; margin: 0 auto 0.5rem auto;">

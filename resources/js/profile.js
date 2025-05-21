@@ -3,8 +3,8 @@
  * @see MatchMate/app/resources/views/session/profile.blade.php
  */
 
-const svgStyles = ["oklch(70.7% 0.022 261.325)", "oklch(84.1% 0.238 128.85)"]; // gray, lime
-
+const svgStyles = ["oklch(70.7% 0.022 261.325)", "oklch(84.1% 0.238 128.85)"], // gray, lime
+    whitespacesAllowed = ["handle", "motto"]; // where whitespaces won't be trimmed
 let forms = [],
     buttons = [],
     validationErrorStates = [],
@@ -150,7 +150,7 @@ function livePreview() {
                         else {
                             let valueOf = target.value,
                                 errorMessage;
-                            if (typeof valueOf === "string") {
+                            if (typeof valueOf === "string" && !whitespacesAllowed.includes(target.id)) {
                                 valueOf = valueOf.replace(/\s+/g, ' ').trim(); // Remove surrounding and internally repeating whitespaces.
                                 if (valueOf !== target.value) // Replace the input text so the user doesn't exhaust their length.
                                     target.value = valueOf;
@@ -220,6 +220,18 @@ function livePreview() {
                                     errorMessage = checkPassword(valueOf);
                                     if(valueOf !== document.getElementById("password").value)
                                         errorMessage = "Hasła się nie zgadzają.";
+                                    break;
+                                case "handle":
+                                    if (!valueOf.match(/^[A-ZĄĆĘŁŃÓŚŹŻ].*$/))
+                                        errorMessage = "Niepoprawna wysokość liter.";
+                                    else if (valueOf.length > 25)
+                                        errorMessage = "Ta nazwa jest zbyt długa."
+                                    break;
+                                case "motto":
+                                    if (!valueOf.match(/^[A-ZĄĆĘŁŃÓŚŹŻ].*$/))
+                                        errorMessage = "Niepoprawna wysokość liter.";
+                                    else if (valueOf.length > 60)
+                                        errorMessage = "Ta nazwa jest zbyt długa."
                                     break;
                                 default:
                                     errorMessage = `Spróbuj ponownie później. ID błędu: validation.${target.id}`;
@@ -311,7 +323,7 @@ function previewImage(file, i){
  *
  * This function accepts *no parameters*.
  *
- * This function **enables drag and drop functionality**, offers enhanced native input interaction and reactive styling**.
+ * This function **enables drag and drop functionality**, offers **enhanced native input interaction and reactive styling**.
  *
  * The titular functionality is **disabled** as of now, since you **cannot programmatically set input file values**.
  *
@@ -362,17 +374,18 @@ function dragAndDropSetup(){
             previewImage(e.target.files[0], i);
         });
     });
-    document.getElementById("imageReset").addEventListener("click", () => {
-        document.getElementById("imageForm").reset();
-        for(let i = 0; i < inputIds.length; i++) {
-            classToggler(document.getElementById(`dnd_${inputIds[i]}`), defaultDNDStyling, activatedStyling[0].concat(activatedStyling[1]));
-            document.getElementById(`svg${inputIds[i].charAt(0).toUpperCase() + inputIds[i].slice(1)}`).style.fill = svgStyles[0];
-            document.getElementById("user_pfp").src = rawPaths[0];
-            document.getElementById("user_banner").style.backgroundImage = rawPaths[1];
-            collectionIndex = [0, 0];
-        }
-        imageButtonLocker(0, true);
-    });
+    if(document.getElementById("imageReset"))
+        document.getElementById("imageReset").addEventListener("click", () => {
+            document.getElementById("imageForm").reset();
+            for(let i = 0; i < inputIds.length; i++) {
+                classToggler(document.getElementById(`dnd_${inputIds[i]}`), defaultDNDStyling, activatedStyling[0].concat(activatedStyling[1]));
+                document.getElementById(`svg${inputIds[i].charAt(0).toUpperCase() + inputIds[i].slice(1)}`).style.fill = svgStyles[0];
+                document.getElementById("user_pfp").src = rawPaths[0];
+                document.getElementById("user_banner").style.backgroundImage = rawPaths[1];
+                collectionIndex = [0, 0];
+            }
+            imageButtonLocker(0, true);
+        });
 }
 
 /**
@@ -394,13 +407,13 @@ function initiate(){
         validationErrorStates.push(validationMatrix);
     });
 
-    livePreview();
-    if(document.getElementById("imageForm")){ // imageForm only
-        for (let i = 0; i < forms.length; i++)
+    livePreview()
+    if(document.getElementById("profileForm")) // profileForm only
+        for (let i = 0; i < forms[0].length; i++)
             archive.push(document.getElementById(`user_${forms[0][i].id}`).innerHTML);
-        archive.push(document.getElementById("user_banner").style.backgroundImage, document.getElementById("user_pfp").src);
-        rawPaths = [document.getElementById("user_pfp").src, document.getElementById("user_banner").style.backgroundImage];
-        dragAndDropSetup();
-    }
+    archive.push(document.getElementById("user_banner").style.backgroundImage, document.getElementById("user_pfp").src);
+    rawPaths = [document.getElementById("user_pfp").src, document.getElementById("user_banner").style.backgroundImage];
+    dragAndDropSetup();
+
 }
 document.addEventListener("DOMContentLoaded", initiate);

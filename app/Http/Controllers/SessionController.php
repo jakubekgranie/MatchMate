@@ -33,12 +33,11 @@ class SessionController extends Controller
                     ->withInput()
                     ->withErrors(["email" => "Nieprawidłowy adres e-mail lub hasło."]);
 
-            $validated = $validator->validated();
             if($user->awaiting_review)
                 return view('session.limbo', ["user" => $user]);
             Auth::login($user, $request->has("remember"));
             request()->session()->regenerate();
-            return redirect('/profile')->with(['title' => 'Zalogowano!', 'theme' => 0]);
+            return redirect()->intended('/profile')->with(['title' => 'Zalogowano!', 'theme' => 0]);
         }
         else
             return redirect('/profile');

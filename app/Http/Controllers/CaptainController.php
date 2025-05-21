@@ -2,27 +2,32 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ControllerHelper;
+use App\Mail\RejectionNotification;
 use App\Models\PendingUserChanges;
 use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class CaptainController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(string $uuid)
     {
-        return redirect("/")->with(["title" => "Route incomplete.", "theme" => 2]);
+        $user = User::where(
+            ['id' => PendingUserChanges::where(
+                ['url_key' => $uuid, 'user_change_statuses_id' => 1, 'user_id' => Auth::id()])
+                    ->first()
+                    ?->desired_value]
+        )->first();
+        if($user)
+            return view('captain.confirm-player', ["user" => $user]);
+        else
+            return redirect('/my-team')
+                ->with(["title" => "Nieznane żądanie. Spróbuj ponownie.", "theme" => 2]);
     }
 
     /**
@@ -30,49 +35,32 @@ class CaptainController extends Controller
      */
     public function store(string $uuid)
     {
-        //  NIEKOMPLETNE!!!
-        $action = PendingUserChanges::where(['user_id' => Auth::id(),'url_key' => $uuid, 'user_change_statuses_id' => 1])->first();
-        if(!is_null($action)) {
-            User::where(
-                ['id' => intval(PendingUserChanges::where(
-                    ['url_key' => $uuid, 'user_change_statuses_id' => 1, 'user_id' => Auth::id()])
-                    ->first()
-                    ->desired_value)
-                ]
-            )->update(["awaiting_review" => false]);
-            return redirect("/profile");
+        $action = ControllerHelper::getAction($uuid);
+        if(!$action instanceof RedirectResponse) {
+            User::where(["id" => intval($action->desired_value)])
+                ->first()
+                ->update(["awaiting_review" => false]);
+            $action->update(["user_change_statuses_id" => 4]);
+            return redirect("/my-team")->with(["title" => "Potwierdzono!"]);
         }
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
+        else
+            return redirect("/my-team")->with(["title" => "Nieznane żądanie. Spróbuj ponownie.", "theme" => 2]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $uuid)
     {
-        //
+        $action = ControllerHelper::getAction($uuid);
+        if(!is_null($action)){
+            $user = User::where(['id' => intval($action->desired_value)])->first();
+            Mail::to($user->email)->queue(new RejectionNotification($user->name, $user->team->name));
+            PendingUserChanges::where(["user_change_types_id" => 4, "desired_value" => intval($action->desired_value)   ])->delete();
+            $user->delete();
+            return redirect("/my-team")->with(["title" => "Odrzucono."]);
+        }
+        else
+            return redirect("/my-team")->with(["title" => "Nieznane żądanie. Spróbuj ponownie.", "theme" => 2]);
     }
 }

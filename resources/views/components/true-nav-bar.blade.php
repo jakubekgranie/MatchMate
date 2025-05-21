@@ -16,7 +16,7 @@
     </div>
     <div class="hidden lg:flex lg:gap-x-10">
         <x-section-anchor class="hover:backdrop-blur-md bg-white/16 hover:bg-stone-100/60 py-2 px-3 border-2 hover:border-black/40 border-gray-700/20 rounded-xl transition duration-100" href="https://www.google.com">Terminarz</x-section-anchor>
-        <x-section-anchor class="hover:backdrop-blur-md bg-white/16 hover:bg-stone-100/60 py-2 px-3 border-2 hover:border-black/40 border-gray-700/20 rounded-xl transition duration-100" href="https://www.google.com">Moja drużyna</x-section-anchor>
+        <x-section-anchor class="hover:backdrop-blur-md bg-white/16 hover:bg-stone-100/60 py-2 px-3 border-2 hover:border-black/40 border-gray-700/20 rounded-xl transition duration-100" href="/my-team">Moja drużyna</x-section-anchor>
     </div>
     <div class="hidden lg:flex lg:flex-1 lg:justify-end gap-2">
         @guest
@@ -54,7 +54,7 @@
             <div class="-my-6 divide-y divide-gray-500/10">
                 <div class="space-y-2 py-6">
                     <x-section-anchor href="https://www.google.com" :mobile="true">Terminarz</x-section-anchor>
-                    <x-section-anchor href="https://www.google.com" :mobile="true">Moja drużyna</x-section-anchor>
+                    <x-section-anchor href="https://www.google.com" href="/my-team" :mobile="true">Moja drużyna</x-section-anchor>
                 </div>
                 <div class="py-6">
                     <x-section-anchor href="/register" :mobile="true">Zarejestruj się</x-section-anchor>

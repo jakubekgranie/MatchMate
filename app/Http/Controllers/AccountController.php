@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ControllerHelper;
 use App\Helpers\RuleDictionary;
 use App\Mail\CredentialsChange;
 use App\Mail\DeletionConfirmation;
-use App\Mail\RejectionNotification;
 use App\Mail\ReviewUser;
 use App\Models\PendingUserChanges;
 use App\Models\Team;
@@ -17,10 +17,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Storage;
 use App\Rules\Capitalized;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 
 class AccountController extends Controller
 {
@@ -36,52 +34,54 @@ class AccountController extends Controller
      */
     public function store(Request $request)
     {
-        if(!Auth::user()) {
-            $RuleDictionary = new RuleDictionary();
-            $validator = Validator::make($request->only('name', 'surname', 'team', 'email', 'password', 'password_confirmation'),
-                $RuleDictionary->composeRules(['name', 'surname', 'team', 'email', 'password']),
-                $RuleDictionary->composeErrorMessages(['required', ValidTeam::class, ExpandedAlpha::class, 'min', 'max', 'email', 'password', 'confirmed', Capitalized::class],
-                    [
-                        'name.min' => 'To imię jest za krótkie.',
-                        'name.max' => 'To imię jest zbyt długie.',
-                        'surname.min' => 'To nazwisko jest za krótkie.',
-                        'surname.max' => 'To nazwisko jest zbyt długie.',
-                        'email.min' => 'Ten email jest za krótki.',
-                        'email.max' => 'Ten email jest zbyt długi.',
-                    ])
-            );
-            if ($validator->fails())
-                return redirect()
-                    ->back()
-                    ->withErrors($validator)
-                    ->withInput();
-            $validated = $validator->validated();
-            $validated['team_id'] = Team::where(['name' => $validated["team"]])->first()->id;
-            $user = User::create($validated);
-            $uuid = AccountController::generateUUID();
-            $teamCaptain = User::with('team')
-                ->where('role_id', 2)
-                ->whereHas('team', function ($query) use ($validator) {
-                    $query->where('name', $validator->validated()['team']);
-                })
-                ->first();
-            PendingUserChanges::create([
-                'user_id' => $teamCaptain->id,
-                'url_key' => $uuid,
-                'user_change_types_id' => 4,
-                'desired_value' => $user->id
-            ]);
-            try {
-                Mail::to($teamCaptain->email)->queue(new ReviewUser($user, $uuid, $teamCaptain->name));
-                return view('session.limbo', ["user" => $user])->with(["title" => "Zarejestowano!"]);
-            }
-            catch (Exception) {
-                $user->delete();
-                return redirect("/register")->with(["title" => "Wystąpił nieznany błąd.", "theme" => 2]);
-            }
-        }
+        $RuleDictionary = new RuleDictionary();
+        $validator = Validator::make($request->only('name', 'surname', 'team', 'email', 'password', 'password_confirmation'),
+            $RuleDictionary->composeRules(['name', 'surname', 'team', 'email', 'password']),
+            $RuleDictionary->composeErrorMessages(['required', ValidTeam::class, ExpandedAlpha::class, 'min', 'max', 'email', 'password', 'confirmed', Capitalized::class],
+                [
+                    'name.min' => 'To imię jest za krótkie.',
+                    'name.max' => 'To imię jest zbyt długie.',
+                    'surname.min' => 'To nazwisko jest za krótkie.',
+                    'surname.max' => 'To nazwisko jest zbyt długie.',
+                    'email.min' => 'Ten email jest za krótki.',
+                    'email.max' => 'Ten email jest zbyt długi.',
+                ])
+        );
+        if ($validator->fails())
+            return redirect()
+                ->back()
+                ->withErrors($validator)
+                ->withInput();
+        $validated = $validator->validated();
+        $validated['team_id'] = Team::where(['name' => $validated["team"]])->first()->id;
+        if(User::where(["email" => $validated["email"]])->exists())
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with(["title" => "Ten adres e-mail jest już w użyciu.", "theme" => 2]);
         else
-            return redirect('/profile');
+            $user = User::create($validated);
+        $uuid = ControllerHelper::generateUUID();
+        $teamCaptain = User::with('team')
+            ->where('role_id', 2)
+            ->whereHas('team', function ($query) use ($validator) {
+                $query->where('name', $validator->validated()['team']);
+            })
+            ->first();
+        PendingUserChanges::create([
+            'user_id' => $teamCaptain->id,
+            'url_key' => $uuid,
+            'user_change_types_id' => 4,
+            'desired_value' => $user->id
+        ]);
+        try {
+            Mail::to($teamCaptain->email)->queue(new ReviewUser($user, $uuid, $teamCaptain->name));
+            return view('session.limbo', ["user" => $user])->with(["title" => "Zarejestowano!"]);
+        }
+        catch (Exception) {
+            $user->delete();
+            return redirect("/register")->with(["title" => "Wystąpił nieznany błąd.", "theme" => 2]);
+        }
     }
 
     /**
@@ -108,9 +108,9 @@ class AccountController extends Controller
         $RuleDictionary = new RuleDictionary();
         switch($request->getRequestUri()) {
             case "/profile/text":
-                $validator = Validator::make(array_filter($request->all()),
+                $validator = Validator::make($request->only(['name', 'surname', 'height', 'age', 'weight']),
                     $RuleDictionary->composeRules(['name', 'surname', 'height', 'age', 'weight'], [],true),
-                    $RuleDictionary->composeErrorMessages(['required', ExpandedAlpha::class, 'min', 'max', 'integer', Capitalized::class],
+                    $RuleDictionary->composeErrorMessages([ExpandedAlpha::class, 'min', 'max', 'integer', Capitalized::class],
                         [
                             'height.min' => 'Skontaktuj się z Obsługą Klienta.',
                             'height.max' => 'Skontaktuj się z Obsługą Klienta.',
@@ -126,43 +126,22 @@ class AccountController extends Controller
                         ->withInput()
                         ->withErrors($validator);
                 User::where("id", Auth::id())->update($validator->validated());
-                return redirect("/profile")->with(["title" => "Dane zmodyfikowano pomyślnie!"]);
+                return redirect()
+                    ->back()
+                    ->with(["title" => "Zapisano zmiany."]);
             case "/profile/images":
-                $names = [];
-                $validator = Validator::make(array_filter($request->all()),
-                    $RuleDictionary->composeRules(['pfp', 'banner'], [],true),
-                    $RuleDictionary->composeErrorMessages(
-                        ['file', 'mimes'],
-                        [
-                            'banner.mimes' => 'Akceptujemy tylko pliki .png oraz .jpg.',
-                            'max' => 'Ten plik jest za duży (max. 8MB).'
-                        ])
-                );
-                if($validator->fails())
-                    return redirect()
-                        ->back()
-                        ->withInput()
-                        ->withErrors($validator);
-                $validated = $validator->validated();
-                foreach ($validated as $pic) {
-                    $fieldName = array_search($pic, $validated);
-                    $dbName = $fieldName."_name";
-                    $oldFileName = Auth::user()->getAttribute($dbName);
-                    if(!is_null($oldFileName))
-                        Storage::delete("images/{$fieldName}s/$oldFileName");
-                    $names[$dbName] = basename($pic->store("images/{$fieldName}s"));
-                }
-                User::where("id", Auth::id())->update($names);
-                break;
+                $response = ControllerHelper::imageUploader(Auth::id());
+                if($response)
+                    return $response;
+                return redirect()
+                    ->back()
+                    ->with(["title" => "Zapisano zmiany."]);
         }
-        return redirect("/profile")->with(["title" => "Zalogowano"]);
+        return redirect()
+            ->back()
+            ->with(["title" => "Wystąpił nieznany błąd. Spróbuj ponownie później.", "theme" => 2]);
     }
-    private static function generateUUID() : string{
-        do {
-            $uuid = Str::uuid()->toString(); // ensure uniqueness
-        } while(PendingUserChanges::where('url_key', $uuid)->exists());
-        return $uuid;
-    }
+
     public function updateMail(Request $request)
     {
         $RuleDictionary = new RuleDictionary();
@@ -182,7 +161,7 @@ class AccountController extends Controller
                 ->with(["title" => "Ten adres e-mail jest w użyciu.", "theme" => 2]);
 
         PendingUserChanges::where(["user_id" => Auth::id(), "user_change_types_id" => 2, "user_change_statuses_id" => 1])->update(["user_change_statuses_id" => 3]);
-        $uuid = AccountController::generateUUID();
+        $uuid = ControllerHelper::generateUUID();
         PendingUserChanges::create([
             "user_id" => Auth::id(),
             "url_key" => $uuid,
@@ -191,10 +170,14 @@ class AccountController extends Controller
         ]);
         try {
             Mail::to(Auth::user()->getEmailForVerification())->queue(new CredentialsChange($uuid, Auth::user(), 1));
-            return redirect("/profile")->with(["title" => "Udało się! Sprawdź swoją skrzynkę e-mail, by kontynuować.", "theme" => 1]);
+            return redirect()
+                ->back()
+                ->with(["title" => "Udało się! Sprawdź swoją skrzynkę e-mail, by kontynuować.", "theme" => 1]);
         }
         catch (Exception) {
-            return redirect("/profile")->with(["title" => "Wystąpił nieznany błąd.", "theme" => 2]);
+            return redirect()
+                ->back()
+                ->with(["title" => "Wystąpił nieznany błąd.", "theme" => 2]);
         }
     }
     public function confirmChange($uuid){
@@ -220,19 +203,9 @@ class AccountController extends Controller
                     break;
             }
             $action->update(["user_change_statuses_id" => 4]);
-            return redirect("/profile")->with(["title" => "Zatwierdzono zmiany."]);
-        }
-        else
-            return redirect("/profile")->with(["title" => "Nieznane żądanie. Spróbuj ponownie.", "theme" => 2]);
-    }
-    public function reject($uuid)
-    {
-        $action = PendingUserChanges::where(['user_id' => Auth::id(),'url_key' => $uuid, 'user_change_types_id' => 4])->first();
-        if(!is_null($action)){
-            $user = User::where(['id' => intval($action->desired_value)])->first();
-            Mail::to($user->email)->queue(new RejectionNotification($user->name, $user->team->name));
-            $user->delete();
-            return redirect("/profile")->with(["title" => "Odrzucono."]);
+            return redirect()
+                ->back()
+                ->with(["title" => "Zatwierdzono zmiany."]);
         }
         else
             return redirect("/profile")->with(["title" => "Nieznane żądanie. Spróbuj ponownie.", "theme" => 2]);
@@ -250,7 +223,7 @@ class AccountController extends Controller
                 ->withErrors(["password" => $validator->errors()->first()]);
 
         PendingUserChanges::where(["user_id" => Auth::id(), "user_change_types_id" => 1, "user_change_statuses_id" => 1])->update(["user_change_statuses_id" => 3]);
-        $uuid = AccountController::generateUUID();
+        $uuid = ControllerHelper::generateUUID();
         PendingUserChanges::create([
             "user_id" => Auth::id(),
             "url_key" => $uuid,
@@ -259,10 +232,14 @@ class AccountController extends Controller
         ]);
         try {
             Mail::to(Auth::user()->getEmailForVerification())->queue(new CredentialsChange($uuid, Auth::user(), 0));
-            return redirect("/profile")->with(["title" => "Udało się! Sprawdź swoją skrzynkę e-mail, by kontynuować.", "theme" => 1]);
+            return redirect()
+                ->back()
+                ->with(["title" => "Udało się! Sprawdź swoją skrzynkę e-mail, by kontynuować.", "theme" => 1]);
         }
         catch (Exception) {
-            return redirect("/profile")->with(["title" => "Wystąpił nieznany błąd.", "theme" => 2]);
+            return redirect()
+                ->back()
+                ->with(["title" => "Wystąpił nieznany błąd.", "theme" => 2]);
         }
     }
 
@@ -271,7 +248,7 @@ class AccountController extends Controller
      */
     public function destroy()
     {
-        $uuid = AccountController::generateUUID();
+        $uuid = ControllerHelper::generateUUID();
         PendingUserChanges::create([
             "user_id" => Auth::id(),
             "url_key" => $uuid,
@@ -279,10 +256,14 @@ class AccountController extends Controller
         ]);
         try {
             Mail::to(Auth::user()->getEmailForVerification())->queue(new DeletionConfirmation($uuid, Auth::user()));
-            return redirect("/profile")->with(["title" => "Udało się! Sprawdź swoją skrzynkę e-mail, by kontynuować.", "theme" => 1]);
+            return redirect()
+                ->back()
+                ->with(["title" => "Udało się! Sprawdź swoją skrzynkę e-mail, by kontynuować.", "theme" => 1]);
         }
         catch (Exception) {
-            return redirect("/profile")->with(["title" => "Wystąpił nieznany błąd.", "theme" => 2]);
+            return redirect()
+                ->back()
+                ->with(["title" => "Wystąpił nieznany błąd.", "theme" => 2]);
         }
     }
 }

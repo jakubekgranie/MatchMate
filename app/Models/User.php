@@ -29,9 +29,10 @@ class User extends Authenticatable
         'height',
         'age',
         'password',
-        'pfp_path',
-        'banner_path',
-        'team_id'
+        'pfp_name',
+        'banner_name',
+        'team_id',
+        'awaiting_review'
     ];
 
     /**

@@ -49,7 +49,9 @@ class RuleDictionary{
             "height" => ["min:55", "max:272", "integer"],
             "weight" =>["min:20", "max:300", "integer"],
             "pfp" => ["file", "mimes:png", "max:8000000"],
-            "banner" => ["file", "mimes:png,jpg", "max:8000000"]
+            "banner" => ["file", "mimes:png,jpg", "max:8000000"],
+            "handle" => [new ExpandedAlpha, "min:1", "max:25", new Capitalized],
+            "motto" => [new ExpandedAlpha, "min:1", "max:60", new Capitalized],
         ];
         $this->defaultErrorMessages = [
             'required' => 'To pole jest wymagane.',

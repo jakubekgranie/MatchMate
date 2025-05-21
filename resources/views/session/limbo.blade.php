@@ -1,4 +1,4 @@
-<x-layout page-title="Profil" :flex-center="true" class="mb-23">
+<x-layout page-title="Profil" :flex-center="true">
     <x-update-form-container class="max-w-[33%]">
         <h1 class="font-bold text-2xl">Oczekiwanie na weryfikację</h1><br>
         <p class="text-lg">Cześć <b>{{ $user->name }}</b>,<br>

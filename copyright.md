@@ -10,17 +10,19 @@
  - [Ikona zdjęcia (przycisk)](https://www.flaticon.com/free-icons/photo)
  - [Ikona profilu (przycisk)](https://www.flaticon.com/free-icons/user)
  - [Ikona powodzenia (powiadomienie)](https://www.flaticon.com/free-icons/correct)
+ - [Ikona potwierdzenia (przycisk)](https://www.flaticon.com/free-icons/tick)
  - [Ikona koperty (powiadomienie)](https://www.flaticon.com/free-icons/email)
  - [Ikona zagrożenia (powiadomienie)](https://www.flaticon.com/free-icons/alert)
+ - [Ikona herbu (edycja ikony klubu)](https://www.flaticon.com/free-icons/crest)
 
 ## 2. 8icons
  - [Domyślna ikona klubu](https://icons8.com)
 
-## 4. Vecteezy
+## 3. Vecteezy
  - [Ikona aplikacji](https://www.vecteezy.com/vector-art/550584-soccer-ball-vector-icon)
 
-## 5. FontAwesome
+## 4. FontAwesome
  - [Ikona śmietnika (przycisk)](https://fontawesome.com/license/free)
 
-## 6. Autor niezarejestrowany
+## 5. Autor niezarejestrowany
  - Domyślny baner użytkownika
