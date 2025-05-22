@@ -61,8 +61,8 @@ class TeamController extends Controller
         switch($request->getRequestUri()){
             case '/my-team/text':
                 $RuleDictionary = new RuleDictionary();
-                $validator = Validator::make($request->only(['handle', 'motto']),
-                    $RuleDictionary->composeRules(['handle', 'motto'], [],true),
+                $validator = Validator::make(array_filter($request->only(['handle', 'motto', 'color'])),
+                    $RuleDictionary->composeRules(['handle', 'motto', 'color'], [],true),
                     $RuleDictionary->composeErrorMessages([ExpandedAlpha::class, 'min', 'max', Capitalized::class])
                 );
                 if($validator->fails())

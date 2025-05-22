@@ -6,6 +6,7 @@ use App\Models\PendingUserChanges;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -72,9 +73,11 @@ class  ControllerHelper
                 $fieldName = array_search($pic, $validated);
                 $dbName = $fieldName."_name";
                 $oldFileName = Auth::user()->getAttribute($dbName);
+                $path = "images/{$fieldName}s/";
+                File::ensureDirectoryExists($path);
                 if (!is_null($oldFileName))
-                    Storage::delete("images/{$fieldName}s/$oldFileName");
-                $names[$dbName] = basename($pic->store("images/{$fieldName}s"));
+                    Storage::delete("$path$oldFileName");
+                $names[$dbName] = basename($pic->store("$path{$fieldName}s"));
             }
             $model::where("id", $id)->update($names);
             return null;

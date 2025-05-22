@@ -108,7 +108,7 @@ class AccountController extends Controller
         $RuleDictionary = new RuleDictionary();
         switch($request->getRequestUri()) {
             case "/profile/text":
-                $validator = Validator::make($request->only(['name', 'surname', 'height', 'age', 'weight']),
+                $validator = Validator::make(array_filter($request->only(['name', 'surname', 'height', 'age', 'weight'])),
                     $RuleDictionary->composeRules(['name', 'surname', 'height', 'age', 'weight'], [],true),
                     $RuleDictionary->composeErrorMessages([ExpandedAlpha::class, 'min', 'max', 'integer', Capitalized::class],
                         [

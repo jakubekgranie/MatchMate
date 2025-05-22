@@ -4,6 +4,7 @@ namespace App\Helpers;
 
 use App\Rules\Capitalized;
 use App\Rules\ExpandedAlpha;
+use App\Rules\isHex;
 use App\Rules\NoWhitespaces;
 use App\Rules\ValidTeam;
 use Illuminate\Validation\Rules\Password;
@@ -29,6 +30,13 @@ class RuleDictionary{
      */
     private array $defaultErrorMessages;
 
+    /**
+     * @var bool **`$debug`**
+     *
+     * Forces **`composeErrorMessages()`** to always return an empty array for debug purposes.
+     */
+    private static bool $debug = false;
+
     public function __construct()
     {
         $this->defaultRuleset = [
@@ -52,6 +60,7 @@ class RuleDictionary{
             "banner" => ["file", "mimes:png,jpg", "max:8000000"],
             "handle" => [new ExpandedAlpha, "min:1", "max:25", new Capitalized],
             "motto" => [new ExpandedAlpha, "min:1", "max:60", new Capitalized],
+            "color" => [new isHex, "size:7"]
         ];
         $this->defaultErrorMessages = [
             'required' => 'To pole jest wymagane.',
@@ -114,12 +123,14 @@ class RuleDictionary{
      *
      * This method **returns a set of error messages** based on the `$requested` parameter. **Adding custom messages is also possible**, via `$additionalRules`.
      *
-     * @param array $requested Required. **The list of wanted rulesets** from the dictionary.
-     * @param array $additionalRules Optional. **Custom rules** to be added into the product.
-     * @return array
+     * @param string[] $requested Required. **The list of wanted rulesets** from the dictionary.
+     * @param string[] $additionalRules Optional. **Custom rules** to be added into the product.
+     * @return string[]|null
      */
-    public function composeErrorMessages(array $requested, array $additionalRules = []) : array
+    public function composeErrorMessages(array $requested, array $additionalRules = []) : array|null
     {
+        if(RuleDictionary::$debug)
+            return [];
         $collected = [];
         foreach($requested as $item) {
             foreach ($additionalRules as $key => $value) {

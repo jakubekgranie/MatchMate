@@ -4,7 +4,8 @@
  */
 
 const svgStyles = ["oklch(70.7% 0.022 261.325)", "oklch(84.1% 0.238 128.85)"], // gray, lime
-    whitespacesAllowed = ["handle", "motto"]; // where whitespaces won't be trimmed
+    whitespacesAllowed = ["handle", "motto"], // where whitespaces won't be trimmed
+    archiveBanned = ["color"];
 let forms = [],
     buttons = [],
     validationErrorStates = [],
@@ -140,7 +141,7 @@ function livePreview() {
                         const profileTarget = document.getElementById(`user_${target.id}`);
                         // Roll back to current values.
                         if (target.value === "") {
-                            if(formId === 0) // profileForm only
+                            if(formId === 0 && profileTarget) // profileForm only
                                 profileTarget.innerHTML = archive[j];
                             document.getElementById(`${target.id}_error`).classList.add("hidden");
                             validationErrorStates[formId][j] = false;
@@ -232,6 +233,17 @@ function livePreview() {
                                         errorMessage = "Niepoprawna wysokość liter.";
                                     else if (valueOf.length > 60)
                                         errorMessage = "Ta nazwa jest zbyt długa."
+                                    break;
+                                case "color":
+                                    valueOf = valueOf.toUpperCase();
+                                    if(valueOf.match(/^[ABCDEF\d]{6}$/)){
+                                        target.value = "#" + valueOf;
+                                        valueOf = target.value;
+                                    }
+                                    if(valueOf.length !== 7)
+                                        errorMessage = "Nieprawidłowa długość.";
+                                    else if(!valueOf.match(/^#[ABCDEF\d]{6}$/))
+                                        errorMessage = "Niepoprawny kod koloru";
                                     break;
                                 default:
                                     errorMessage = `Spróbuj ponownie później. ID błędu: validation.${target.id}`;
@@ -410,7 +422,8 @@ function initiate(){
     livePreview()
     if(document.getElementById("profileForm")) // profileForm only
         for (let i = 0; i < forms[0].length; i++)
-            archive.push(document.getElementById(`user_${forms[0][i].id}`).innerHTML);
+            if(!archiveBanned.includes(forms[0][i].id))
+                archive.push(document.getElementById(`user_${forms[0][i].id}`).innerHTML);
     archive.push(document.getElementById("user_banner").style.backgroundImage, document.getElementById("user_pfp").src);
     rawPaths = [document.getElementById("user_pfp").src, document.getElementById("user_banner").style.backgroundImage];
     dragAndDropSetup();
