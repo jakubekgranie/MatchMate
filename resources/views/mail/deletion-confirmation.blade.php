@@ -24,7 +24,7 @@
                 </p>
                 <p style="margin: 0;">Oto twój link usuwający konto:</p>
             </div>
-            <a href="http://127.0.0.1:8000/profile/action/{{ $uuid }}">
+            <a href="https://jn.plesk.netk.pl/profile/action/{{ $uuid }}">
                 <p style="text-decoration: underline; color: darkblue; text-align: center; margin: 6px;"><strong>UWAGA:</strong> ta czynność jest nieodwracalna!</p>
             </a>
             <div class="md:text-lg max-w-140 mb-2" style="margin-bottom: 0.5rem;">

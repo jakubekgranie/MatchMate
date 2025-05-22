@@ -26,13 +26,13 @@
                 <p style="margin: 0;">Użytkownik <strong>{{ "$user->name $user->surname" }} ({{ $user->email }})</strong> złożył wniosek o dodanie do drużyny.</p>
             </div>
             <div style="margin: 2rem 0">
-                <a href="http://127.0.0.1:8000/profile/action/{{ $uuid }}/dashboard">
+                <a href="https://jn.plesk.netk.pl/profile/action/{{ $uuid }}/dashboard">
                     <p style="text-decoration: underline; color: darkblue; text-align: center; margin: 6px;">Kliknij tutaj, by rozważyć prośbę.</p>
                 </a>
-                <a href="http://127.0.0.1:8000/profile/action/{{ $uuid }}/accept">
+                <a href="https://jn.plesk.netk.pl/profile/action/{{ $uuid }}/accept">
                     <p style="text-decoration: underline; color: darkblue; text-align: center; margin: 6px;">Kliknij tutaj, by bezpośrednio zaakceptować prośbę.</p>
                 </a>
-                <a href="http://127.0.0.1:8000/profile/action/{{ $uuid }}/reject">
+                <a href="https://jn.plesk.netk.pl/profile/action/{{ $uuid }}/reject">
                     <p style="text-decoration: underline; color: darkblue; text-align: center; margin: 6px;">Kliknij tutaj, by bezpośrednio odrzucić prośbę.</p>
                 </a>
             </div>
