@@ -4,7 +4,7 @@ namespace App\Helpers;
 
 use App\Rules\Capitalized;
 use App\Rules\ExpandedAlpha;
-use App\Rules\isHex;
+use App\Rules\IsHex;
 use App\Rules\NoWhitespaces;
 use App\Rules\ValidTeam;
 use Illuminate\Validation\Rules\Password;
@@ -60,10 +60,11 @@ class RuleDictionary{
             "banner" => ["file", "mimes:png,jpg", "max:8000000"],
             "handle" => [new ExpandedAlpha, "min:1", "max:25", new Capitalized],
             "motto" => [new ExpandedAlpha, "min:1", "max:60", new Capitalized],
-            "color" => [new isHex, "size:7"]
+            "color" => [new IsHex, "size:7"]
         ];
         $this->defaultErrorMessages = [
             'required' => 'To pole jest wymagane.',
+            IsHex::class => 'Nieprawidłowy kod koloru.',
             ValidTeam::class => 'Nie znaleziono drużyny.',
             ExpandedAlpha::class => 'Wykryto niedozwolone znaki.',
             'integer' => 'Wykryto niedozwoloną liczbę.',

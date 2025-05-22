@@ -4,8 +4,7 @@
  */
 
 const svgStyles = ["oklch(70.7% 0.022 261.325)", "oklch(84.1% 0.238 128.85)"], // gray, lime
-    whitespacesAllowed = ["handle", "motto"], // where whitespaces won't be trimmed
-    archiveBanned = ["color"];
+    whitespacesAllowed = ["handle", "motto"]; // where whitespaces won't be trimmed
 let forms = [],
     buttons = [],
     validationErrorStates = [],
@@ -41,12 +40,14 @@ function changeButtonLock(button, lock = true){
     if(lock && !button.disabled){
         button.disabled = true;
         classToggler(button, commitLockedStyles, commitUnlockedStyles);
-        svgIcon.style.fill = svgStyles[0];
+        if(svgIcon)
+            svgIcon.style.fill = svgStyles[0];
     }
     if(!lock && button.disabled){
         button.disabled = false;
         classToggler(button, commitUnlockedStyles, commitLockedStyles);
-        svgIcon.style.fill = svgStyles[1];
+        if(svgIcon)
+            svgIcon.style.fill = svgStyles[1];
     }
 }
 
@@ -106,9 +107,7 @@ function addSuffix(targetId, age){
     return "";
 }
 function checkPassword(valueOf){
-    if(valueOf.length < 8)
-        return "Hasło powinno zawierać min. 8 znaków";
-    else if(valueOf.length > 64)
+    if(valueOf.length > 64)
         return "To hasło jest za długie.";
     else if(!valueOf.match(/[A-Za-z]+/) || !valueOf.match(/[A-Z]/) && !valueOf.match(/[a-z]/))
         return "Hasło powinno zawierać co najmniej jedną małą i dużą literę.";
@@ -118,8 +117,8 @@ function checkPassword(valueOf){
         return "Hasło nie może zawierać spacji."
     else if(!valueOf.match(/[\W|_]/))
         return "Hasło powinno zawierać symbole.";
-    else if(document.getElementById("password_confirmation") && valueOf !== document.getElementById("password_confirmation").value)
-        return "Hasła się nie zgadzają.";
+    else if(valueOf.length < 8)
+        return "Hasło powinno zawierać min. 8 znaków";
     else return false;
 }
 /**
@@ -164,21 +163,21 @@ function livePreview() {
                             // Detect and note anomalies.
                             switch (target.id) {
                                 case "name":
-                                    if (!valueOf.match(/^[A-Z][a-ząćęłńóśźż]+$/))
+                                    if (!valueOf.charAt(0).match(/^[A-ZĄĆĘŁŃÓŚŹŻ]$/u))
                                         errorMessage = "Niepoprawna wysokość liter.";
                                     else if (valueOf.length > 14)
                                         errorMessage = "To imię jest zbyt długie."
-                                    else if (!valueOf.match(/^[A-Za-ząćęłńóśźż]*$/))
+                                    else if (!valueOf.match(/^[A-ZĄĆĘŁŃÓŚŹŻa-ząćęłńóśźż]*$/))
                                         errorMessage = "Wykryto niedozwolone znaki.";
                                     else if (valueOf.length < 2)
                                     errorMessage = "To imię jest zbyt krótkie.";
                                     break;
                                 case "surname":
-                                    if (!valueOf.match(/^[A-Z][a-ząćęłńóśźż]+$/))
+                                    if (!valueOf.charAt(0).match(/^[A-ZĄĆĘŁŃÓŚŹŻ]$/))
                                         errorMessage = "Niepoprawna wysokość liter.";
                                     else if (valueOf.length > 35)
                                         errorMessage = "To nazwisko jest zbyt długie."
-                                    else if (!valueOf.match(/^[A-Za-ząćęłńóśźż]*$/))
+                                    else if (!valueOf.match(/^[A-ZĄĆĘŁŃÓŚŹŻa-ząćęłńóśźż]*$/))
                                         errorMessage = "Wykryto niedozwolone znaki.";
                                     else if (valueOf.length < 2)
                                         errorMessage = "To nazwisko jest zbyt krótkie.";
@@ -223,13 +222,13 @@ function livePreview() {
                                         errorMessage = "Hasła się nie zgadzają.";
                                     break;
                                 case "handle":
-                                    if (!valueOf.match(/^[A-ZĄĆĘŁŃÓŚŹŻ].*$/))
+                                    if (!valueOf.charAt(0).match(/^[A-ZĄĆĘŁŃÓŚŹŻ].*$/))
                                         errorMessage = "Niepoprawna wysokość liter.";
                                     else if (valueOf.length > 25)
                                         errorMessage = "Ta nazwa jest zbyt długa."
                                     break;
                                 case "motto":
-                                    if (!valueOf.match(/^[A-ZĄĆĘŁŃÓŚŹŻ].*$/))
+                                    if (!valueOf.charAt(0).match(/^[A-ZĄĆĘŁŃÓŚŹŻ].*$/))
                                         errorMessage = "Niepoprawna wysokość liter.";
                                     else if (valueOf.length > 60)
                                         errorMessage = "Ta nazwa jest zbyt długa."
@@ -243,7 +242,7 @@ function livePreview() {
                                     if(valueOf.length !== 7)
                                         errorMessage = "Nieprawidłowa długość.";
                                     else if(!valueOf.match(/^#[ABCDEF\d]{6}$/))
-                                        errorMessage = "Niepoprawny kod koloru";
+                                        errorMessage = "Nieprawidłowy kod koloru.";
                                     break;
                                 default:
                                     errorMessage = `Spróbuj ponownie później. ID błędu: validation.${target.id}`;
@@ -251,24 +250,13 @@ function livePreview() {
                             // Notify the user of discrepancies.
                             if (errorMessage) {
                                 validationErrorStates[formId][j] = true;
-                                let errorContainer;
-                                if(target.id !== "password_confirmation")
-                                    errorContainer = document.getElementById(`${target.id}_error`);
-                                else
-                                    errorContainer = document.getElementById("password_error");
+                                const errorContainer = document.getElementById(`${target.id}_error`);
                                 errorContainer.innerHTML = errorMessage;
                                 errorContainer.classList.remove("hidden");
                             }
                             // Remove the error lock and preview the value.
                             else {
-                                if(target.id === "password_confirmation" || target.id === "password") {
-                                    for (let k = 0; k < formInputs.length; k++)
-                                        if (formInputs[k].id === "password_confirmation" ? "password" : "password_confirmation")
-                                            validationErrorStates[formId][k] = false;
-                                    document.getElementById("password_error").classList.add("hidden");
-                                }
-                                else
-                                    document.getElementById(`${target.id}_error`).classList.add("hidden");
+                                document.getElementById(`${target.id}_error`).classList.add("hidden");
                                 validationErrorStates[formId][j] = false;
                                 // no checks for pconf needed
                                 if(document.getElementById(`user_${target.id}`))
@@ -349,6 +337,8 @@ function dragAndDropSetup(){
         const element = document.getElementById(`dnd_${inputId}`),
               hoverClasses = [["bg-gray-700", "outline-gray-300"], activatedStyling[0]],
               nonHoverClasses = [defaultDNDStyling, activatedStyling[1]];
+        if(!element)
+            return;
         /*
         element.addEventListener("dragenter", () => classToggler(element, hoverClasses[collectionIndex[i]], nonHoverClasses[collectionIndex[i]]));
         element.addEventListener("dragleave", () => classToggler(element, nonHoverClasses[collectionIndex[i]], hoverClasses[collectionIndex[i]]));
@@ -411,7 +401,7 @@ function dragAndDropSetup(){
  */
 function initiate(){
     ["profileForm", "emailForm", "passwordForm"].forEach(form => {
-        forms.push(document.querySelectorAll(`#${form} input:not([type="hidden"])`));
+        forms.push(document.querySelectorAll(`#${form} input:not([type="hidden"]):not([type="checkbox"]`));
         buttons.push(document.querySelector(`#${form} button[type="submit"]`));
         const validationMatrix = [];
         for(let i = 0; i < forms[forms.length - 1].length; i++)
@@ -420,12 +410,15 @@ function initiate(){
     });
 
     livePreview()
-    if(document.getElementById("profileForm")) // profileForm only
+    if(document.getElementById("profileForm")) // preview
         for (let i = 0; i < forms[0].length; i++)
-            if(!archiveBanned.includes(forms[0][i].id))
+            if(document.getElementById(`user_${forms[0][i].id}`))
                 archive.push(document.getElementById(`user_${forms[0][i].id}`).innerHTML);
-    archive.push(document.getElementById("user_banner").style.backgroundImage, document.getElementById("user_pfp").src);
-    rawPaths = [document.getElementById("user_pfp").src, document.getElementById("user_banner").style.backgroundImage];
+    const previewBanner = document.getElementById("user_banner"), previewPfp = document.getElementById("user_pfp");
+    if(previewBanner && previewPfp) {
+        archive.push(previewBanner.style.backgroundImage, previewPfp.src);
+        rawPaths = [previewPfp.src, previewBanner.style.backgroundImage];
+    }
     dragAndDropSetup();
 
 }

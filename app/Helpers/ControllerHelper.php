@@ -4,13 +4,13 @@ namespace App\Helpers;
 
 use App\Models\PendingUserChanges;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 
 class  ControllerHelper
 {
@@ -48,12 +48,19 @@ class  ControllerHelper
         };
     }
 
-    public static function imageUploader(int $id, string $model = User::class) : null|RedirectResponse
+    public static function imageUploader(int $id, string $model = User::class, array $columnNames = ["pfp", "banner"]) : RedirectResponse|null
     {
-        try {
+        try{
             $RuleDictionary = new RuleDictionary();
-            $validator = Validator::make(request()->only(['pfp', 'banner']),
-                $RuleDictionary->composeRules(['pfp', 'banner'], [],true),
+            $input = [];
+            $request = request();
+            if ($request->hasFile('pfp'))
+                $input['pfp'] = $request->file('pfp');
+            if ($request->hasFile('banner'))
+                $input['banner'] = $request->file('banner');
+            $toBeValidated = array_keys($input);
+            $validator = Validator::make($input,
+                $RuleDictionary->composeRules($toBeValidated, [], true),
                 $RuleDictionary->composeErrorMessages(
                     ['file', 'mimes'],
                     [
@@ -61,28 +68,28 @@ class  ControllerHelper
                         'max' => 'Ten plik jest za duży (max. 8MB).'
                     ])
             );
-            if($validator->fails()) {
+            if ($validator->fails())
                 return redirect()
                     ->back()
                     ->withInput()
                     ->withErrors($validator);
-            }
+
             $names = [];
-            $validated = $validator->validated();
-            foreach ($validated as $pic) {
-                $fieldName = array_search($pic, $validated);
-                $dbName = $fieldName."_name";
+            $validated = array_values($validator->validated());
+            for ($i = 0; $i < sizeof($validated); $i++) {
+                $fieldName = $columnNames[array_search($toBeValidated[$i], $columnNames)];;
+                $dbName = $fieldName . "_name";
                 $oldFileName = Auth::user()->getAttribute($dbName);
-                $path = "images/{$fieldName}s/";
+                $path = "images/{$fieldName}s";
                 File::ensureDirectoryExists($path);
                 if (!is_null($oldFileName))
-                    Storage::delete("$path$oldFileName");
-                $names[$dbName] = basename($pic->store("$path{$fieldName}s"));
+                    Storage::delete("$path/$oldFileName");
+                $names[$dbName] = basename($validated[$i]->store($path));
             }
             $model::where("id", $id)->update($names);
             return null;
         }
-        catch (ValidationException) {
+        catch (Exception) {
             return redirect()
                 ->back()
                 ->withInput()

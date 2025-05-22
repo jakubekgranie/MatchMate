@@ -23,7 +23,7 @@
                         </form>
                     </x-update-form-container>
                     <x-update-form-container>
-                        <form class="grid grid-cols-2 gap-3.5" id="imageForm" action="/my-team/images" method="POST">
+                        <form class="grid grid-cols-2 gap-3.5" id="imageForm" action="/my-team/images" enctype="multipart/form-data" method="POST">
                             @csrf
                             @method('PATCH')
                             <x-form-image-input name="pfp" class="p-6">
@@ -34,7 +34,12 @@
                                 <g><path style="opacity:0.974" d="M 375.5,129.5 C 401.814,126.365 419.648,137.032 429,161.5C 434.166,187.67 424.666,206.17 400.5,217C 372.003,223.837 352.503,213.67 342,186.5C 337.275,157.926 348.442,138.926 375.5,129.5 Z"/></g>
                             </x-form-image-input>
                             <x-save-button class="h-9 col-span-2" id="imageFormSubmission" type="submit" svg-icon-id="svgIconText"/>
+                            <x-input-error class="col-span-2 text-center" name="pfp"/>
+                            <x-input-error class="col-span-2 text-center" name="banner"/>
                         </form>
+                        <div class="flex flex-col gap-3.5 text-center w-fit">
+
+                        </div>
                     </x-update-form-container>
                 </div>
             @endif

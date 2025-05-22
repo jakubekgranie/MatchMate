@@ -53,7 +53,7 @@ class AccountController extends Controller
                 ->withErrors($validator)
                 ->withInput();
         $validated = $validator->validated();
-        $validated['team_id'] = Team::where(['name' => $validated["team"]])->first()->id;
+        $validated['team_id'] = Team::where(['handle' => $validated["team"]])->first()->id;
         if(User::where(["email" => $validated["email"]])->exists())
             return redirect()
                 ->back()
@@ -65,7 +65,7 @@ class AccountController extends Controller
         $teamCaptain = User::with('team')
             ->where('role_id', 2)
             ->whereHas('team', function ($query) use ($validator) {
-                $query->where('name', $validator->validated()['team']);
+                $query->where('handle', $validator->validated()['team']);
             })
             ->first();
         PendingUserChanges::create([

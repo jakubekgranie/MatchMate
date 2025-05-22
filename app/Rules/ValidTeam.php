@@ -17,7 +17,7 @@ class ValidTeam implements ValidationRule
     {
         $validTeams = Team::all();
         foreach ($validTeams as $team)
-            if($team->name === $value)
+            if($team->handle === $value)
                 return;
         $fail("validation.notValidTeam");
     }

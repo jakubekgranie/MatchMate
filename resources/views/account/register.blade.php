@@ -14,7 +14,7 @@
                         <option selected disabled>-</option>
                         @php
                             foreach (\App\Models\Team::all() as $team)
-                                echo "<option>{$team->name}</option>"
+                                echo "<option>{$team->handle}</option>"
                         @endphp
                     </select>
                 </div>

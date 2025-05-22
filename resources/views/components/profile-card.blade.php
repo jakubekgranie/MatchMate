@@ -4,10 +4,10 @@
     $team = $user->team;
 @endphp
 
-<div class="flex items-center flex-col profileCard{{ !$captainMode ? " cursor-pointer " : ""}}max-w-96 w-full">
-    <div @if(!is_null($team)) style="{{ "border-color: {$team->color}"}}" @endif class="border-2{{ $captainMode ? " rounded-bl-none rounded-br-none" : "" }}{{ is_null($team) ? ' border-gray-500/65 ' : ' ' }}rounded-xl shadow-sm shadow-gray-500">
+<div class="flex items-center flex-col profileCard{{ !$captainMode ? " cursor-pointer " : ""}}">
+    <div @if(!is_null($team)) style="{{ "border-color: {$team->color}"}}" @endif class="border-2{{ $captainMode ? " rounded-bl-none rounded-br-none" : "" }}{{ is_null($team) ? ' border-gray-500/65 ' : ' ' }}rounded-xl shadow-sm shadow-gray-500 w-96">
         <div @if($previewMode) id="user_banner" @endif style="background-image: url('{{ asset(is_null($user->banner_name) ? Vite::asset("resources/images/defaults/banner.png") : asset("storage/images/banners/".$user->banner_name)) }}')" class="h-18 border-b-3 border-gray-500/45 bg-cover bg-position-[center_top] rounded-t-[calc(1rem-5px)]"></div>
-        <div class="flex items-center px-7 gap-4 bg-gray-50 rounded-b-[calc(1rem-5px)] bg-[url({{ Vite::asset("resources/images/defaults/cardbg.png") }})] bg-no-repeat bg-cover bg-position-[left_1rem_center]">
+        <div style="background: oklch(98.5% 0.002 247.839) url('{{ Vite::asset("resources/images/defaults/cardbg.png") }}')" class="flex items-center px-7 gap-4 bg-gray-50 rounded-b-[calc(1rem-5px)] !bg-no-repeat !bg-contain !bg-position-[left_1rem_center]">
             <div class="max-w-23 h-23 mr-2 flex content-center">
                 <img @if($previewMode) id="user_pfp" @endif src="{{ asset(is_null($user->pfp_name) ? Vite::asset("resources/images/defaults/pfp.png") : asset("storage/images/pfps/{$user->pfp_name}")) }}" class="h-full min-w-12.5 drop-shadow-sm drop-shadow-gray-600 select-none" alt="Your profile picture">
             </div>

@@ -7,6 +7,7 @@ use App\Helpers\RuleDictionary;
 use App\Models\Team;
 use App\Rules\Capitalized;
 use App\Rules\ExpandedAlpha;
+use App\Rules\IsHex;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -63,19 +64,20 @@ class TeamController extends Controller
                 $RuleDictionary = new RuleDictionary();
                 $validator = Validator::make(array_filter($request->only(['handle', 'motto', 'color'])),
                     $RuleDictionary->composeRules(['handle', 'motto', 'color'], [],true),
-                    $RuleDictionary->composeErrorMessages([ExpandedAlpha::class, 'min', 'max', Capitalized::class])
+                    $RuleDictionary->composeErrorMessages([ExpandedAlpha::class, 'min', 'max', Capitalized::class, IsHex::class])
                 );
-                if($validator->fails())
+                if($validator->fails()) {
                     return redirect()
                         ->back()
                         ->withInput()
                         ->withErrors($validator);
+                }
                 Auth::user()->team->update($validator->validated());
                 return redirect()
                     ->back()
                     ->with(["title" => "Zapisano zmiany."]);
             case '/my-team/images':
-                $response = ControllerHelper::imageUploader(Auth::id());
+                $response = ControllerHelper::imageUploader(Auth::user()->team->id, Team::class, ["icon", "banner"]);
                 if($response)
                     return $response;
                 return redirect()
