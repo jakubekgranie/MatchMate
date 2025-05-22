@@ -1,6 +1,6 @@
 @props(["user", "previewMode" => false, "captainMode" => false])
 @php
-    use \App\Helpers\ControllerHelper;
+    use App\Helpers\ControllerHelper;
     $team = $user->team;
 @endphp
 
@@ -21,7 +21,7 @@
         </div>
     </div>
     @if($captainMode)
-        <div @if(!is_null($team)) style="border-color: {{ $team->color }}" @endif class="border-2 {{ is_null($team) ? 'border-gray-500/65' : ""}} border-t-0 w-full rounded-b-xl shadow-sm shadow-gray-500 bg-gray-50 px-5 py-2.5 mt-[1px] grid grid-cols-2 gap-4">
+        <div @if(!is_null($team)) style="border-color: {{ $team->color }}" @endif class="border-2 {{ is_null($team) ? 'border-gray-500/65' : ""}} border-t-0 w-[calc(100%-4px)] rounded-b-xl shadow-sm shadow-gray-500 bg-gray-50 px-5 py-2.5 mt-[1px] grid grid-cols-2 gap-4">
             <a class="h-9" href="{{ ControllerHelper::getParentUrl(request()->getRequestUri()) }}/accept">
                 <x-save-button text="Akceptuj" class="w-full h-full" :activated="true">
                     <g><path style="opacity:0.985" d="M 511.5,136.5 C 511.5,137.5 511.5,138.5 511.5,139.5C 400.492,242.342 289.325,345.008 178,447.5C 174.714,445.218 171.714,442.551 169,439.5C 112.634,378.969 56.1336,318.636 -0.5,258.5C -0.5,257.5 -0.5,256.5 -0.5,255.5C 23.991,233.407 48.3243,211.074 72.5,188.5C 109.324,227.458 146.158,266.458 183,305.5C 269.199,224.966 355.699,144.799 442.5,65C 443.635,64.2506 444.635,64.4173 445.5,65.5C 467.55,89.213 489.55,112.88 511.5,136.5 Z"/></g>

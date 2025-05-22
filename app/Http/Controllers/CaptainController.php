@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\ControllerHelper;
 use App\Mail\RejectionNotification;
 use App\Models\PendingUserChanges;
+use App\Models\Team;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -37,9 +38,15 @@ class CaptainController extends Controller
     {
         $action = ControllerHelper::getAction($uuid);
         if(!$action instanceof RedirectResponse) {
-            User::where(["id" => intval($action->desired_value)])
+            $targetUser = User::where(["id" => intval($action->desired_value)]);
+            $targetUser
                 ->first()
-                ->update(["awaiting_review" => false]);
+                ->update(["awaiting_review" => false, "is_reserve" =>
+                    Team::with("user")
+                        ->where(["id" => $targetUser->team_id])
+                        ->whereHas("user", function($query) { $query->where(["is_reserve" => false, "awaiting_review" => false]); })
+                        ->count() > 5
+                ]);
             $action->update(["user_change_statuses_id" => 4]);
             return redirect("/my-team")->with(["title" => "Potwierdzono!"]);
         }
