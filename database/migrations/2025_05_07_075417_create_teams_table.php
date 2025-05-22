@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('handle')->unique();
             $table->string('icon_name')->nullable();
             $table->string('banner_name')->nullable();
-            $table->string('team_color')->nullable();
+            $table->string('color')->nullable();
             $table->string('motto')->nullable();
             $table->string('description')->nullable();
             $table->timestamps();

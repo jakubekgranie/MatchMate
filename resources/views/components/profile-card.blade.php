@@ -5,7 +5,7 @@
 @endphp
 
 <div class="flex items-center flex-col profileCard{{ !$captainMode ? " cursor-pointer " : ""}}max-w-96 w-full">
-    <div @if(!is_null($team)) style="{{ "border-color: {$team->team_color}"}}" @endif class="border-2{{ $captainMode ? " rounded-bl-none rounded-br-none" : "" }}{{ is_null($team) ? ' border-gray-500/65 ' : ' ' }}rounded-xl shadow-sm shadow-gray-500">
+    <div @if(!is_null($team)) style="{{ "border-color: {$team->color}"}}" @endif class="border-2{{ $captainMode ? " rounded-bl-none rounded-br-none" : "" }}{{ is_null($team) ? ' border-gray-500/65 ' : ' ' }}rounded-xl shadow-sm shadow-gray-500">
         <div @if($previewMode) id="user_banner" @endif style="background-image: url('{{ asset(is_null($user->banner_name) ? Vite::asset("resources/images/defaults/banner.png") : asset("storage/images/banners/".$user->banner_name)) }}')" class="h-18 border-b-3 border-gray-500/45 bg-cover bg-position-[center_top] rounded-t-[calc(1rem-5px)]"></div>
         <div class="flex items-center px-7 gap-4 bg-gray-50 rounded-b-[calc(1rem-5px)] bg-[url({{ Vite::asset("resources/images/defaults/cardbg.png") }})] bg-no-repeat bg-cover bg-position-[left_1rem_center]">
             <div class="max-w-23 h-23 mr-2 flex content-center">
@@ -14,14 +14,14 @@
             <div class="flex justify-between flex-col gap-0.5">
                 <div class="flex justify-center items-center w-fit">
                     <img src="{{ asset(is_null($team) ? Vite::asset("resources/images/defaults/team_icon.png") : asset("storage/images/icons/{$team->icon_name}")) }}" class="h-5 mr-1.5 select-none" alt="Ikona klubu {{ !is_null($team) ? $team->handle : "(nie należy)" }}">
-                    <h2 @if(!is_null($team)) style="{{ "color: {$team->team_color}" }}" @endif class="uppercase italic font-cal-sans {{ is_null($team) ? 'text-stone-500/85' : ""}}">{{ is_null($team) ? "Oczekuje" : $team->handle }}</h2>
+                    <h2 @if(!is_null($team)) style="{{ "color: {$team->color}" }}" @endif class="uppercase italic font-cal-sans {{ is_null($team) ? 'text-stone-500/85' : ""}}">{{ is_null($team) ? "Oczekuje" : $team->handle }}</h2>
                 </div>
                 <h1 class="font-outfit font-semibold tracking-wide text-lg text-gray-950 text-shadow-sm text-shadow-stone-400/55 text-nowrap whitespace-nowrap overflow-hidden overflow-ellipsis max-w-50"><span @if($previewMode) id="user_name" @endif>{{ $user->name }}</span> <span @if($previewMode) id="user_surname" @endif>{{ $user->surname }}</span></h1>
             </div>
         </div>
     </div>
     @if($captainMode)
-        <div @if(!is_null($team)) style="border-color: {{ $team->team_color }}" @endif class="border-2 {{ is_null($team) ? 'border-gray-500/65' : ""}} border-t-0 w-full rounded-b-xl shadow-sm shadow-gray-500 bg-gray-50 px-5 py-2.5 mt-[1px] grid grid-cols-2 gap-4">
+        <div @if(!is_null($team)) style="border-color: {{ $team->color }}" @endif class="border-2 {{ is_null($team) ? 'border-gray-500/65' : ""}} border-t-0 w-full rounded-b-xl shadow-sm shadow-gray-500 bg-gray-50 px-5 py-2.5 mt-[1px] grid grid-cols-2 gap-4">
             <a class="h-9" href="{{ ControllerHelper::getParentUrl(request()->getRequestUri()) }}/accept">
                 <x-save-button text="Akceptuj" class="w-full h-full" :activated="true">
                     <g><path style="opacity:0.985" d="M 511.5,136.5 C 511.5,137.5 511.5,138.5 511.5,139.5C 400.492,242.342 289.325,345.008 178,447.5C 174.714,445.218 171.714,442.551 169,439.5C 112.634,378.969 56.1336,318.636 -0.5,258.5C -0.5,257.5 -0.5,256.5 -0.5,255.5C 23.991,233.407 48.3243,211.074 72.5,188.5C 109.324,227.458 146.158,266.458 183,305.5C 269.199,224.966 355.699,144.799 442.5,65C 443.635,64.2506 444.635,64.4173 445.5,65.5C 467.55,89.213 489.55,112.88 511.5,136.5 Z"/></g>
@@ -34,7 +34,7 @@
             </a>
         </div>
     @else
-        <div @if(!is_null($team)) style="border-color: {{ $team->team_color }}" @endif class="border-2 {{ is_null($team) ? 'border-gray-500/65' : ""}} border-t-0 w-fit rounded-b-xl shadow-sm shadow-gray-500 bg-gray-50 px-5 py-2.5 mt-[1px] hidden">
+        <div @if(!is_null($team)) style="border-color: {{ $team->color }}" @endif class="border-2 {{ is_null($team) ? 'border-gray-500/65' : ""}} border-t-0 w-fit rounded-b-xl shadow-sm shadow-gray-500 bg-gray-50 px-5 py-2.5 mt-[1px] hidden">
             <div class="m-auto flex gap-4">
                 <div class="font-cal-sans">
                     <p class="uppercase text-sm">Wzrost</p>

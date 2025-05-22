@@ -11,6 +11,7 @@
                     @method('PATCH')
                     <x-form-input name="handle" maxlength="25" :label="false" placeholder="Nazwa drużyny" :override-grid="true"/>
                     <x-form-input name="motto" maxlength="60" :label="false" placeholder="Motto drużyny" :override-grid="true"/>
+                    <x-form-input name="motto" maxlength="6" :label="false" placeholder="Motto drużyny" :override-grid="true"/>
                     <x-save-button class="h-9" id="profileFormSubmission" type="submit" svg-icon-id="svgIconText"/>
                 </form>
             </x-update-form-container>

@@ -10,7 +10,7 @@ class Team extends Model
 {
     /** @use HasFactory<\Database\Factories\TeamFactory> */
     use HasFactory;
-
+    protected $fillable = ["handle", "motto", "color"];
     public function users(): HasMany{
         return $this->hasMany(User::class);
     }
