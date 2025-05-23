@@ -1,19 +1,33 @@
 @php
     use App\Models\User;
+    use App\Models\PendingUserChanges;
     use Illuminate\Support\Facades\Auth;
     $role = Auth::user()->role_id;
     $all = User::with("team")->whereHas("team", function ($query) { $query->where(["id" => Auth::user()->team->id]); })->get();
     $base = $all->filter(fn($teamMember) => !$teamMember->awaiting_review);
     $unconfirmed = $all->filter(fn($teamMember) => $teamMember->awaiting_review);
+    $unconfirmedIds = $unconfirmed->pluck('id')->map(fn($id) => (int)$id)->all();
 
     $playing = $base->filter(fn($teamMember) => !$teamMember->is_reserve);
     $reserve = $base->filter(fn($teamMember) => $teamMember->is_reserve);
+    $uuids = PendingUserChanges::where(["user_change_statuses_id" => 1, "user_change_types_id" => 4])
+        ->get()
+        ->filter(fn($record) => in_array(intval($record->desired_value), $unconfirmedIds))
+        ->pluck("url_key");
+    $index = 0;
 @endphp
-
 <x-layout page-title="Profil">
     <x-slot:scripts>
-        @vite(["resources/js/profile.js", "resources/js/clickableCard.js"])
+        @vite(["resources/js/profile.js", "resources/js/clickableCard.js", "resources/js/cardCustomMenu.js"])
     </x-slot:scripts>
+    <div id="cardContextMenu" class="rounded-md bg-stone-100 px-2 py-3.5 shadow-md shadow-stone-600/65 hidden w-fit absolute z-60">
+        <form action="{{ route("change-status") }}" method="POST">
+            @csrf
+            @method('PATCH')
+            <input type="hidden" id="playerId" name="playerId">
+            <button class="text-lg">Zmień na gracza <span id="contextMenuFeed"></span></button>
+        </form>
+    </div>
     <div class="w-fit m-auto my-11">
         <div>
             <div class="flex {{ $role == 2 ? "justify-between min-w-[40dvw]" : "justify-center" }} gap-5">
@@ -55,18 +69,21 @@
             <div class="flex flex-col gap-8">
                 <x-player-frame title="Gracze">
                         @foreach($playing as $player)
-                            <x-profile-card :user="$player"/>
+                            <x-profile-card :user="$player" class="player"/>
                         @endforeach
                 </x-player-frame>
                 <x-player-frame title="Rezerwowi">
                         @foreach($reserve as $benched)
-                            <x-profile-card :user="$benched"/>
+                            <x-profile-card :user="$benched" class="reserve"/>
                         @endforeach
                 </x-player-frame>
-                @if($role === 2)
+                @if($role === 2 && sizeof($unconfirmed))
                     <x-player-frame title="Oczekujący">
                             @foreach($unconfirmed as $awaiting)
-                                <x-profile-card :user="$awaiting" :captain-mode="true"/>
+                                <x-profile-card :user="$awaiting" :captain-mode="true" :uuid="$uuids[$index]" class="notClickable"/>
+                                @php
+                                    $index++;
+                                @endphp
                             @endforeach
                     </x-player-frame>
                 @endif

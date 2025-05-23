@@ -1,5 +1,5 @@
 function initiate(){
-    const cards = document.querySelectorAll(".profileCard");
+    const cards = document.querySelectorAll(".profileCard:not(.notClickable)");
     for(let i = 0; i < cards.length; i++)
         cards[i].addEventListener("click", () => cards[i].children[1].classList.toggle("hidden"));
 }

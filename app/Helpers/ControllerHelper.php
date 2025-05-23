@@ -25,7 +25,7 @@ class  ControllerHelper
         array_pop($components);
         return implode("/", $components);
     }
-    public static function getAction(string $uuid) : PendingUserChanges|RedirectResponse|null{
+    public static function getAction(string $uuid) : PendingUserChanges|RedirectResponse{
         $action = PendingUserChanges::with("user")
             ->where(['user_id' => Auth::id(),'url_key' => $uuid])
             ->whereHas('user', function ($query) {$query->where('role_id', '>', '1');})

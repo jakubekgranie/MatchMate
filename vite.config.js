@@ -13,6 +13,7 @@ export default defineConfig({
                 'resources/js/disableFakeNavBars.js',
                 "resources/js/notificationHandler.js",
                 'resources/js/profile.js',
+                'resources/js/cardCustomMenu.js',
 
                 'resources/images/matchmate_icon.png',
                 'resources/images/matchmate_title.png',
