@@ -14,20 +14,20 @@
         style="font-family: system-ui; background-color: rgb(231 229 228); padding: 1.75rem 10%;">
         <div class="mx-12" style="margin-left: 3rem; margin-right: 3rem;">
             <h1
-                class="md:text-3xl font-bold lg:text-center mb-6"
-                style="font-size: inherit; font-weight: 700; margin: 0 0 1.5rem;">
+                class="md:text-3xl font-bold mb-6"
+                style="font-size: inherit; font-weight: 700; margin: 0 0 1.5rem; text-align: center">
                 Potwierdzenie żądania usunięcia konta
             </h1>
-            <div class="md:text-lg max-w-140 mb-2" style="margin-bottom: 0.5rem;">
+            <div class="md:text-lg max-w-140 mb-2" style="margin-bottom: 0.5rem; text-align: center">
                 <p class="mb-3" style="margin: 0 0 0.75rem;">
                     Cześć <strong style="font-weight: bolder;">{{ $user->name }}</strong>,
                 </p>
                 <p style="margin: 0;">Oto twój link usuwający konto:</p>
             </div>
-            <a href="http://127.0.0.1:8000/profile/action/{{ $uuid }}">
+            <a href="https://jn.plesk.netk.pl/profile/action/{{ $uuid }}" class="margin: 3rem 0">
                 <p style="text-decoration: underline; color: darkblue; text-align: center; margin: 6px;"><strong>UWAGA:</strong> ta czynność jest nieodwracalna!</p>
             </a>
-            <div class="md:text-lg max-w-140 mb-2" style="margin-bottom: 0.5rem;">
+            <div class="md:text-lg max-w-140 mb-2" style="margin-bottom: 0.5rem; text-align: center">
                 <p class="mb-6" style="margin: 0 0 1.5rem;">
                     Jeżeli nie miałeś/aś tego na myśli, zignoruj tą wiadomość. Twoje konto nie zostanie usunięte.
                 </p>

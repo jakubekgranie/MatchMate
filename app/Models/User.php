@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -16,11 +16,6 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Team::class);
     }
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
         'surname',
@@ -32,7 +27,8 @@ class User extends Authenticatable
         'pfp_name',
         'banner_name',
         'team_id',
-        'awaiting_review'
+        'awaiting_review',
+        "is_reserve"
     ];
 
     /**

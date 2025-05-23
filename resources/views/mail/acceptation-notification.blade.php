@@ -16,14 +16,14 @@
             <h1
                 class="md:text-3xl font-bold lg:text-center mb-6"
                 style="font-size: inherit; font-weight: 700; margin: 0 0 1.5rem;">
-                Odrzucenie wniosku
+                Zaakceptowanie wniosku
             </h1>
             <div class="md:text-lg max-w-140 mb-2" style="margin: 0 auto 0.5rem auto; text-align: center">
                 <p class="mb-3" style="margin: 0 0 0.75rem;">
                     Cześć
                     <strong style="font-weight: bolder;">{{ $userName }}</strong>,
                 </p>
-                <p style="margin: 0;">Drużyna <strong>{{ $teamName }}</strong> odrzuciła Twój wniosek o dodanie. W związku z tym Twoje konto oraz powiązane dane zostały usunięte.</p>
+                <p style="margin: 0;">Drużyna <strong>{{ $teamName }}</strong> zaakceptowała twój wniosek o dodanie. Twoje konto zostało aktywowane.</p>
             </div>
             <div class="md:text-lg max-w-140 mb-2 text-center" style="text-align: center; margin: 0 auto 0.5rem auto;">
                 Z poważaniem,

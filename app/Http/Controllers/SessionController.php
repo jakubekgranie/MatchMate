@@ -13,6 +13,9 @@ use Illuminate\Validation\ValidationException;
 
 class SessionController extends Controller
 {
+    public function show(){
+        return view('session.profile');
+    }
     /**
      * Login page returned
      */
@@ -41,15 +44,6 @@ class SessionController extends Controller
         }
         else
             return redirect('/profile');
-    }
-    public function show(){
-        return view('session.profile');
-    }
-    public function edit(){
-
-    }
-    public function update(){
-
     }
     public function destroy(){
         Auth::logout();

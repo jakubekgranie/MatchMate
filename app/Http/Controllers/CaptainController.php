@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ControllerHelper;
+use App\Mail\AcceptationNotification;
 use App\Mail\RejectionNotification;
 use App\Models\PendingUserChanges;
 use App\Models\User;
@@ -37,10 +38,15 @@ class CaptainController extends Controller
     {
         $action = ControllerHelper::getAction($uuid);
         if(!$action instanceof RedirectResponse) {
-            User::where(["id" => intval($action->desired_value)])
-                ->first()
-                ->update(["awaiting_review" => false]);
+            $targetUser = User::where(["id" => intval($action->desired_value)])->first();
+            $targetUser
+                ->update(["awaiting_review" => false, "is_reserve" =>
+                    User::with("team")
+                        ->where(["is_reserve" => false, "awaiting_review" => false])
+                        ->whereHas("team", fn($q) => $q->where("id", $targetUser->team_id))
+                        ->count() > 5]);
             $action->update(["user_change_statuses_id" => 4]);
+            Mail::to($targetUser->email)->queue(new AcceptationNotification($targetUser->name, $targetUser->team->handle));
             return redirect("/my-team")->with(["title" => "Potwierdzono!"]);
         }
         else
@@ -53,14 +59,17 @@ class CaptainController extends Controller
     public function destroy(string $uuid)
     {
         $action = ControllerHelper::getAction($uuid);
-        if(!is_null($action)){
+        if(!$action instanceof RedirectResponse){
             $user = User::where(['id' => intval($action->desired_value)])->first();
-            Mail::to($user->email)->queue(new RejectionNotification($user->name, $user->team->name));
-            PendingUserChanges::where(["user_change_types_id" => 4, "desired_value" => intval($action->desired_value)   ])->delete();
+            Mail::to($user->email)->queue(new RejectionNotification($user->name, $user->team->handle));
+            PendingUserChanges::where(["desired_value" => $action->desired_value])->delete();
             $user->delete();
             return redirect("/my-team")->with(["title" => "Odrzucono."]);
         }
         else
             return redirect("/my-team")->with(["title" => "Nieznane żądanie. Spróbuj ponownie.", "theme" => 2]);
+    }
+    public function changeStatus(){
+
     }
 }

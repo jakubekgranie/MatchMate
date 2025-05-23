@@ -109,7 +109,7 @@ function addSuffix(targetId, age){
 function checkPassword(valueOf){
     if(valueOf.length > 64)
         return "To hasło jest za długie.";
-    else if(!valueOf.match(/[A-Za-z]+/) || !valueOf.match(/[A-Z]/) && !valueOf.match(/[a-z]/))
+    else if(!valueOf.match(/[A-Za-z]+/) || !valueOf.match(/[A-Z]/) || !valueOf.match(/[a-z]/))
         return "Hasło powinno zawierać co najmniej jedną małą i dużą literę.";
     else if (!valueOf.match(/\d/))
         return "Hasło powinno zawierać cyfry.";

@@ -84,25 +84,6 @@ class AccountController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request)
     {
         $RuleDictionary = new RuleDictionary();
@@ -172,7 +153,7 @@ class AccountController extends Controller
             Mail::to(Auth::user()->getEmailForVerification())->queue(new CredentialsChange($uuid, Auth::user(), 1));
             return redirect()
                 ->back()
-                ->with(["title" => "Udało się! Sprawdź swoją skrzynkę e-mail, by kontynuować.", "theme" => 1]);
+                ->with(["title" => "Żądanie przesłane. Sprawdź swoją skrzynkę e-mail, by kontynuować.", "theme" => 1]);
         }
         catch (Exception) {
             return redirect()
@@ -189,7 +170,7 @@ class AccountController extends Controller
                     break;
                 case 2:
                     if(User::where("email", $action->desired_value)->exists()) { // check if mail isn't in use
-                        $action->update(["user_change_statuses_id" => 2]);
+                        $action->update(["user_change_statuses_id" => 4]);
                         return redirect()
                             ->back()
                             ->withInput()
@@ -200,7 +181,8 @@ class AccountController extends Controller
                 case 3:
                     User::where(['id' => Auth::id()])->delete();
                     Auth::logout();
-                    break;
+                    return redirect("/login")
+                        ->with(["title" => "Usunięto konto."]);
             }
             $action->update(["user_change_statuses_id" => 4]);
             return redirect()
@@ -234,7 +216,7 @@ class AccountController extends Controller
             Mail::to(Auth::user()->getEmailForVerification())->queue(new CredentialsChange($uuid, Auth::user(), 0));
             return redirect()
                 ->back()
-                ->with(["title" => "Udało się! Sprawdź swoją skrzynkę e-mail, by kontynuować.", "theme" => 1]);
+                ->with(["title" => "Żądanie przesłane. Sprawdź swoją skrzynkę e-mail, by kontynuować.", "theme" => 1]);
         }
         catch (Exception) {
             return redirect()
@@ -258,7 +240,7 @@ class AccountController extends Controller
             Mail::to(Auth::user()->getEmailForVerification())->queue(new DeletionConfirmation($uuid, Auth::user()));
             return redirect()
                 ->back()
-                ->with(["title" => "Udało się! Sprawdź swoją skrzynkę e-mail, by kontynuować.", "theme" => 1]);
+                ->with(["title" => "Żądanie przesłane. Sprawdź swoją skrzynkę e-mail, by kontynuować.", "theme" => 1]);
         }
         catch (Exception) {
             return redirect()
